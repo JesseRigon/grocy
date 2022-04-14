@@ -1,5 +1,6 @@
 <?php
 
+//cc:init#1;load controllers
 use Grocy\Controllers\LoginController;
 use Grocy\Helpers\UrlManager;
 use Grocy\Middleware\CorsMiddleware;
