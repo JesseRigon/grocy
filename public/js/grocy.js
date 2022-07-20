@@ -232,6 +232,7 @@ U = function(relativePath)
 }
 
 Grocy.Translator = new Translator(Grocy.LocalizationStrings);
+Grocy.TranslatorQu = new Translator(Grocy.LocalizationStringsQu);
 __t = function(text, ...placeholderValues)
 {
 	if (Grocy.Mode === "dev")
@@ -245,7 +246,7 @@ __t = function(text, ...placeholderValues)
 
 	return Grocy.Translator.__(text, ...placeholderValues)
 }
-__n = function(number, singularForm, pluralForm)
+__n = function(number, singularForm, pluralForm, isQu = false)
 {
 	if (Grocy.Mode === "dev")
 	{
@@ -256,7 +257,19 @@ __n = function(number, singularForm, pluralForm)
 		}
 	}
 
-	return Grocy.Translator.n__(singularForm, pluralForm, Math.abs(number), Math.abs(number))
+	if (pluralForm == null || pluralForm.isEmpty())
+	{
+		pluralForm = singularForm;
+	}
+
+	if (isQu)
+	{
+		return Grocy.TranslatorQu.n__(singularForm, pluralForm, Math.abs(number), Math.abs(number))
+	}
+	else
+	{
+		return Grocy.Translator.n__(singularForm, pluralForm, Math.abs(number), Math.abs(number))
+	}
 }
 
 if (!Grocy.ActiveNav.isEmpty())
@@ -330,7 +343,13 @@ RefreshContextualTimeago = function(rootSelector = "#page-content")
 
 		var timestamp = element.attr("datetime");
 
-		if (timestamp.isEmpty())
+		if (timestamp.isEmpty() || timestamp.length < 10)
+		{
+			element.text("")
+			return
+		}
+
+		if (!moment(timestamp).isValid())
 		{
 			element.text("")
 			return
@@ -374,7 +393,7 @@ window.FontAwesomeConfig = {
 }
 
 Grocy.FrontendHelpers = {};
-Grocy.FrontendHelpers.ValidateForm = function(formId)
+Grocy.FrontendHelpers.ValidateForm = function(formId, reportValidity = false)
 {
 	var form = document.getElementById(formId);
 	if (form === null || form === undefined)
@@ -382,16 +401,14 @@ Grocy.FrontendHelpers.ValidateForm = function(formId)
 		return;
 	}
 
-	if (form.checkValidity() === true)
+	$(form).addClass('was-validated');
+
+	if (reportValidity)
 	{
-		$(form).find(':submit').removeClass('disabled');
-	}
-	else
-	{
-		$(form).find(':submit').addClass('disabled');
+		form.reportValidity();
 	}
 
-	$(form).addClass('was-validated');
+	return form.checkValidity();
 }
 
 Grocy.FrontendHelpers.BeginUiBusy = function(formId = null)
@@ -419,9 +436,15 @@ Grocy.FrontendHelpers.ShowGenericError = function(message, exception)
 	toastr.error(__t(message) + '<br><br>' + __t('Click to show technical details'), '', {
 		onclick: function()
 		{
+			var errorDetails = JSON.stringify(exception, null, 4);
+			if (typeof exception === "object" && exception !== null && exception.hasOwnProperty("error_message"))
+			{
+				errorDetails = exception.error_message;
+			}
+
 			bootbox.alert({
 				title: __t('Error details'),
-				message: '<pre class="my-0"><code>' + JSON.stringify(exception, null, 4) + '</code></pre>',
+				message: '<p class="text-monospace my-0">' + errorDetails + '</p>',
 				closeButton: false
 			});
 		}
@@ -430,9 +453,9 @@ Grocy.FrontendHelpers.ShowGenericError = function(message, exception)
 	console.error(exception);
 }
 
-Grocy.FrontendHelpers.SaveUserSetting = function(settingsKey, value)
+Grocy.FrontendHelpers.SaveUserSetting = function(settingsKey, value, force = false)
 {
-	if (Grocy.UserSettings[settingsKey] == value)
+	if (Grocy.UserSettings[settingsKey] == value && !force)
 	{
 		return;
 	}
@@ -604,7 +627,7 @@ function RefreshLocaleNumberDisplay(rootSelector = "#page-content")
 		}
 
 		var value = parseFloat(text);
-		$(this).text(value.toLocaleString(undefined, { style: "currency", currency: Grocy.Currency, minimumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices }));
+		$(this).text(value.toLocaleString(undefined, { style: "currency", currency: Grocy.Currency, minimumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_display, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_display }));
 	});
 
 	$(rootSelector + " .locale-number.locale-number-quantity-amount").each(function()
@@ -628,7 +651,7 @@ function RefreshLocaleNumberDisplay(rootSelector = "#page-content")
 		}
 
 		var value = parseFloat(text);
-		$(this).text(value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }));
+		$(this).text(value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	});
 }
 RefreshLocaleNumberDisplay();
@@ -643,7 +666,7 @@ function RefreshLocaleNumberInput(rootSelector = "#page-content")
 			return;
 		}
 
-		$(this).val(parseFloat(value).toLocaleString("en", { minimumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices, useGrouping: false }));
+		$(this).val(parseFloat(value).toLocaleString("en", { minimumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_input, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_input, useGrouping: false }));
 	});
 
 	$(rootSelector + " .locale-number-input.locale-number-quantity-amount").each(function()
@@ -874,11 +897,11 @@ $('a.link-return').not(".btn").each(function()
 	var base = $(this).data('href');
 	if (base.contains('?'))
 	{
-		$(this).attr('href', base + '&returnto' + encodeURIComponent(location.pathname));
+		$(this).attr('href', base + '&returnto' + encodeURIComponent(Grocy.CurrentUrlRelative));
 	}
 	else
 	{
-		$(this).attr('href', base + '?returnto=' + encodeURIComponent(location.pathname));
+		$(this).attr('href', base + '?returnto=' + encodeURIComponent(Grocy.CurrentUrlRelative));
 	}
 
 })
@@ -980,15 +1003,16 @@ $(".change-table-columns-visibility-button").on("click", function(e)
 	dataTable.columns().every(function()
 	{
 		var index = this.index();
-		var title = $(this.header()).text();
+		var headerCell = $(this.header());
+		var title = headerCell.text();
 		var visible = this.visible();
 
-		if (title.isEmpty() || title.startsWith("Hidden"))
+		if (title.isEmpty() || title.startsWith("Hidden") || headerCell.hasClass("d-none"))
 		{
 			return;
 		}
 
-		var shadowColumnIndex = $(this.header()).attr("data-shadow-rowgroup-column");
+		var shadowColumnIndex = headerCell.attr("data-shadow-rowgroup-column");
 		if (shadowColumnIndex)
 		{
 			index = shadowColumnIndex;
@@ -1013,7 +1037,7 @@ $(".change-table-columns-visibility-button").on("click", function(e)
 				</label> \
 			</div>';
 
-		if (rowGroupDefined)
+		if (rowGroupDefined && headerCell.hasClass("allow-grouping"))
 		{
 			var rowGroupChecked = "";
 			if (dataTable.rowGroup().enabled() && dataTable.rowGroup().dataSrc() == index)
@@ -1037,10 +1061,25 @@ $(".change-table-columns-visibility-button").on("click", function(e)
 		}
 	});
 
-	var message = '<div class="text-center"><h5>' + __t('Table options') + '</h5><hr><h5 class="mb-0">' + __t('Hide/view columns') + '</h5><div class="text-left form-group">' + columnCheckBoxesHtml + '</div></div>';
+	var message = '\
+		<div class="text-center"> \
+			<h5>' + __t('Table options') + '</h5> \
+			<hr> \
+			<h5 class="mb-0">' + __t('Hide/view columns') + '</h5> \
+			<div class="text-left form-group"> \
+				' + columnCheckBoxesHtml + ' \
+			</div> \
+		</div>';
+
 	if (rowGroupDefined)
 	{
-		message += '<div class="text-center mt-1"><h5 class="pt-3 mb-0">' + __t('Group by') + '</h5><div class="text-left form-group">' + rowGroupRadioBoxesHtml + '</div></div>';
+		message += ' \
+			<div class="text-center mt-1"> \
+				<h5 class="pt-3 mb-0">' + __t('Group by') + '</h5> \
+				<div class="text-left form-group"> \
+					' + rowGroupRadioBoxesHtml + ' \
+				</div> \
+			</div>';
 	}
 
 	bootbox.dialog({
@@ -1103,6 +1142,7 @@ $(document).on("click", ".change-table-columns-visibility-toggle", function()
 	var dataTable = $(dataTableSelector).DataTable();
 
 	dataTable.columns(columnIndex).visible(this.checked);
+	LoadImagesLazy();
 });
 
 
@@ -1158,3 +1198,15 @@ if (Grocy.FeatureFlags.GROCY_FEATURE_FLAG_RECIPES)
 		$("#meal-plan-nav-link").attr("href", $("#meal-plan-nav-link").attr("href") + "?start=" + moment().startOf("week").format("YYYY-MM-DD"));
 	}
 }
+
+$('[data-toggle="tooltip"][data-html="true"]').on("shown.bs.tooltip", function()
+{
+	RefreshLocaleNumberDisplay(".tooltip");
+})
+
+$(document).on("click", "#clear-filter-button", function(e)
+{
+	// Remove the focus from the current button
+	// to prevent that the tooltip stays until clicked anywhere else
+	document.activeElement.blur();
+});

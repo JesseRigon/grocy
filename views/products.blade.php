@@ -14,13 +14,13 @@
 					type="button"
 					data-toggle="collapse"
 					data-target="#table-filter-row">
-					<i class="fas fa-filter"></i>
+					<i class="fa-solid fa-filter"></i>
 				</button>
 				<button class="btn btn-outline-dark d-md-none mt-2 order-1 order-md-3"
 					type="button"
 					data-toggle="collapse"
 					data-target="#related-links">
-					<i class="fas fa-ellipsis-v"></i>
+					<i class="fa-solid fa-ellipsis-v"></i>
 				</button>
 			</div>
 			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
@@ -49,7 +49,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-search"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-search"></i></span>
 			</div>
 			<input type="text"
 				id="search"
@@ -60,7 +60,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Product group') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Product group') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="product-group-filter">
@@ -95,11 +95,12 @@
 	</div>
 	<div class="col">
 		<div class="float-right">
-			<a id="clear-filter-button"
+			<button id="clear-filter-button"
 				class="btn btn-sm btn-outline-info"
-				href="#">
-				{{ $__t('Clear filter') }}
-			</a>
+				data-toggle="tooltip"
+				title="{{ $__t('Clear filter') }}">
+				<i class="fa-solid fa-filter-circle-xmark"></i>
+			</button>
 		</div>
 	</div>
 </div>
@@ -115,15 +116,16 @@
 							data-toggle="tooltip"
 							title="{{ $__t('Table options') }}"
 							data-table-selector="#products-table"
-							href="#"><i class="fas fa-eye"></i></a>
+							href="#"><i class="fa-solid fa-eye"></i></a>
 					</th>
 					<th>{{ $__t('Name') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING) d-none @endif">{{ $__t('Location') }}</th>
-					<th>{{ $__t('Min. stock amount') }}</th>
-					<th>{{ $__t('Default quantity unit purchase') }}</th>
-					<th>{{ $__t('Quantity unit stock') }}</th>
-					<th>{{ $__t('Product group') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Default store') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING) d-none @endif allow-grouping">{{ $__t('Location') }}</th>
+					<th class="allow-grouping">{{ $__t('Min. stock amount') }}</th>
+					<th class="">{{ $__t('Default quantity unit purchase') }}</th>
+					<th class="allow-grouping">{{ $__t('Quantity unit stock') }}</th>
+					<th class="">{{ $__t('Product group') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif allow-grouping">{{ $__t('Default store') }}</th>
+					<th class="">{{ $__t('grocycode') }}</th>
 
 					@include('components.userfields_thead', array(
 					'userfields' => $userfields
@@ -139,7 +141,7 @@
 							href="{{ $U('/product/') }}{{ $product->id }}"
 							data-toggle="tooltip"
 							title="{{ $__t('Edit this item') }}">
-							<i class="fas fa-edit"></i>
+							<i class="fa-solid fa-edit"></i>
 						</a>
 						<a class="btn btn-danger btn-sm product-delete-button"
 							href="#"
@@ -147,13 +149,13 @@
 							data-product-name="{{ $product->name }}"
 							data-toggle="tooltip"
 							title="{{ $__t('Delete this item') }}">
-							<i class="fas fa-trash"></i>
+							<i class="fa-solid fa-trash"></i>
 						</a>
 						<div class="dropdown d-inline-block">
 							<button class="btn btn-sm btn-light text-secondary"
 								type="button"
 								data-toggle="dropdown">
-								<i class="fas fa-ellipsis-v"></i>
+								<i class="fa-solid fa-ellipsis-v"></i>
 							</button>
 							<div class="table-inline-menu dropdown-menu dropdown-menu-right">
 								<a class="dropdown-item"
@@ -173,7 +175,7 @@
 					<td>
 						{{ $product->name }}
 						@if(!empty($product->picture_file_name))
-						<i class="fas fa-image text-muted"
+						<i class="fa-solid fa-image text-muted"
 							data-toggle="tooltip"
 							title="{{ $__t('This product has a picture') }}"></i>
 						@endif
@@ -206,6 +208,10 @@
 						{{ $store->name }}
 						@endif
 					</td>
+					<td>
+						<img data-src="{{ $U('/product/' . $product->id . '/grocycode?size=25') }}"
+							class="lazy">
+					</td>
 
 					@include('components.userfields_tbody', array(
 					'userfields' => $userfields,
@@ -228,34 +234,41 @@
 				<h4 class="modal-title w-100">{{ $__t('Merge products') }}</h4>
 			</div>
 			<div class="modal-body">
-				<div class="form-group">
-					<label for="merge-products-keep">{{ $__t('Product to keep') }}&nbsp;<i class="fas fa-question-circle text-muted"
-							data-toggle="tooltip"
-							data-trigger="hover click"
-							title="{{ $__t('After merging, this product will be kept') }}"></i>
-					</label>
-					<select class="custom-control custom-select"
-						id="merge-products-keep">
-						<option></option>
-						@foreach($products as $product)
-						<option value="{{ $product->id }}">{{ $product->name }}</option>
-						@endforeach
-					</select>
-				</div>
-				<div class="form-group">
-					<label for="merge-products-remove">{{ $__t('Product to remove') }}&nbsp;<i class="fas fa-question-circle text-muted"
-							data-toggle="tooltip"
-							data-trigger="hover click"
-							title="{{ $__t('After merging, all occurences of this product will be replaced by "Product to keep" (means this product will not exist anymore)') }}"></i>
-					</label>
-					<select class="custom-control custom-select"
-						id="merge-products-remove">
-						<option></option>
-						@foreach($products as $product)
-						<option value="{{ $product->id }}">{{ $product->name }}</option>
-						@endforeach
-					</select>
-				</div>
+				<form id="merge-products-form"
+					novalidate>
+
+					<div class="form-group">
+						<label for="merge-products-keep">{{ $__t('Product to keep') }}&nbsp;<i class="fa-solid fa-question-circle text-muted"
+								data-toggle="tooltip"
+								data-trigger="hover click"
+								title="{{ $__t('After merging, this product will be kept') }}"></i>
+						</label>
+						<select class="custom-control custom-select"
+							id="merge-products-keep"
+							required>
+							<option></option>
+							@foreach($products as $product)
+							<option value="{{ $product->id }}">{{ $product->name }}</option>
+							@endforeach
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="merge-products-remove">{{ $__t('Product to remove') }}&nbsp;<i class="fa-solid fa-question-circle text-muted"
+								data-toggle="tooltip"
+								data-trigger="hover click"
+								title="{{ $__t('After merging, all occurences of this product will be replaced by the kept product (means this product will not exist anymore)') }}"></i>
+						</label>
+						<select class="custom-control custom-select"
+							id="merge-products-remove"
+							required>
+							<option></option>
+							@foreach($products as $product)
+							<option value="{{ $product->id }}">{{ $product->name }}</option>
+							@endforeach
+						</select>
+					</div>
+
+				</form>
 			</div>
 			<div class="modal-footer">
 				<button type="button"
@@ -263,8 +276,7 @@
 					data-dismiss="modal">{{ $__t('Cancel') }}</button>
 				<button id="merge-products-save-button"
 					type="button"
-					class="btn btn-primary"
-					data-dismiss="modal">{{ $__t('OK') }}</button>
+					class="btn btn-primary">{{ $__t('OK') }}</button>
 			</div>
 		</div>
 	</div>

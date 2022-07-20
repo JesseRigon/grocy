@@ -18,7 +18,7 @@
 				type="button"
 				data-toggle="collapse"
 				data-target="#related-links">
-				<i class="fas fa-ellipsis-v"></i>
+				<i class="fa-solid fa-ellipsis-v"></i>
 			</button>
 			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
 				id="related-links">
@@ -44,18 +44,19 @@
 				data-user-filter="xx{{ GROCY_USER_ID }}xx"
 				class="secondary-message user-filter-message responsive-button"></div>
 			@endif
-			<div class="float-right">
-				<a class="btn btn-sm btn-outline-info d-md-none mt-1"
+			<div class="float-right mt-1">
+				<a class="btn btn-sm btn-outline-info d-md-none"
 					data-toggle="collapse"
 					href="#table-filter-row"
 					role="button">
-					<i class="fas fa-filter"></i>
+					<i class="fa-solid fa-filter"></i>
 				</a>
-				<a id="clear-filter-button"
-					class="btn btn-sm btn-outline-info mt-1"
-					href="#">
-					{{ $__t('Clear filter') }}
-				</a>
+				<button id="clear-filter-button"
+					class="btn btn-sm btn-outline-info"
+					data-toggle="tooltip"
+					title="{{ $__t('Clear filter') }}">
+					<i class="fa-solid fa-filter-circle-xmark"></i>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -66,7 +67,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-search"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-search"></i></span>
 			</div>
 			<input type="text"
 				id="search"
@@ -77,7 +78,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="status-filter">
@@ -94,7 +95,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Assignment') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Assignment') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="user-filter">
@@ -120,12 +121,12 @@
 							data-toggle="tooltip"
 							title="{{ $__t('Table options') }}"
 							data-table-selector="#chores-overview-table"
-							href="#"><i class="fas fa-eye"></i></a>
+							href="#"><i class="fa-solid fa-eye"></i></a>
 					</th>
 					<th>{{ $__t('Chore') }}</th>
 					<th>{{ $__t('Next estimated tracking') }}</th>
 					<th>{{ $__t('Last tracked') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS) d-none @endif">{{ $__t('Assigned to') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS) d-none @endif allow-grouping">{{ $__t('Assigned to') }}</th>
 					<th class="d-none">Hidden status</th>
 					<th class="d-none">Hidden assigned to user id</th>
 
@@ -147,15 +148,31 @@
 							title="{{ $__t('Track chore execution') }}"
 							data-chore-id="{{ $curentChoreEntry->chore_id }}"
 							data-chore-name="{{ FindObjectInArrayByPropertyValue($chores, 'id', $curentChoreEntry->chore_id)->name }}">
-							<i class="fas fa-play"></i>
+							<i class="fa-solid fa-play"></i>
+						</a>
+						<a class="btn btn-secondary btn-sm track-chore-button skip permission-CHORE_TRACK_EXECUTION @if(FindObjectInArrayByPropertyValue($chores, 'id', $curentChoreEntry->chore_id)->period_type == \Grocy\Services\ChoresService::CHORE_PERIOD_TYPE_MANUALLY) disabled @endif"
+							href="#"
+							data-toggle="tooltip"
+							data-placement="left"
+							title="{{ $__t('Skip next chore schedule') }}"
+							data-chore-id="{{ $curentChoreEntry->chore_id }}"
+							data-chore-name="{{ FindObjectInArrayByPropertyValue($chores, 'id', $curentChoreEntry->chore_id)->name }}">
+							<i class="fa-solid fa-forward"></i>
 						</a>
 						<div class="dropdown d-inline-block">
 							<button class="btn btn-sm btn-light text-secondary"
 								type="button"
 								data-toggle="dropdown">
-								<i class="fas fa-ellipsis-v"></i>
+								<i class="fa-solid fa-ellipsis-v"></i>
 							</button>
 							<div class="table-inline-menu dropdown-menu dropdown-menu-right">
+								<a class="dropdown-item reschedule-chore-button"
+									data-chore-id="{{ $curentChoreEntry->chore_id }}"
+									type="button"
+									href="#">
+									<span>{{ $__t('Reschedule next execution') }}</span>
+								</a>
+								<div class="dropdown-divider"></div>
 								<a class="dropdown-item chore-name-cell"
 									data-chore-id="{{ $curentChoreEntry->chore_id }}"
 									type="button"
@@ -173,7 +190,7 @@
 									<span class="dropdown-item-text">{{ $__t('Edit chore') }}</span>
 								</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item stockentry-grocycode-link"
+								<a class="dropdown-item"
 									type="button"
 									href="{{ $U('/chore/' . $curentChoreEntry->chore_id . '/grocycode?download=true') }}">
 									{!! str_replace('grocycode', '<span class="ls-n1">grocycode</span>', $__t('Download %s grocycode', $__t('Chore'))) !!}
@@ -194,20 +211,36 @@
 						{{ FindObjectInArrayByPropertyValue($chores, 'id', $curentChoreEntry->chore_id)->name }}
 					</td>
 					<td>
-						@if(FindObjectInArrayByPropertyValue($chores, 'id', $curentChoreEntry->chore_id)->period_type !== \Grocy\Services\ChoresService::CHORE_PERIOD_TYPE_MANUALLY)
+						@if(!empty($curentChoreEntry->next_estimated_execution_time))
 						<span id="chore-{{ $curentChoreEntry->chore_id }}-next-execution-time">{{ $curentChoreEntry->next_estimated_execution_time }}</span>
 						<time id="chore-{{ $curentChoreEntry->chore_id }}-next-execution-time-timeago"
 							class="timeago timeago-contextual @if($curentChoreEntry->track_date_only == 1) timeago-date-only @endif"
 							datetime="{{ $curentChoreEntry->next_estimated_execution_time }}"></time>
 						@else
-						<span>-</span>
+						<span id="chore-{{ $curentChoreEntry->chore_id }}-next-execution-time">-</span>
+						<time id="chore-{{ $curentChoreEntry->chore_id }}-next-execution-time-timeago"
+							class="timeago timeago-contextual @if($curentChoreEntry->track_date_only == 1) timeago-date-only @endif"></time>
+						@endif
+						@if($curentChoreEntry->is_rescheduled == 1)
+						<span id="chore-{{ $curentChoreEntry->chore_id }}-rescheduled-icon"
+							class="text-muted"
+							data-toggle="tooltip"
+							title="{{ $__t('Rescheduled') }}">
+							<i class="fa-regular fa-clock"></i>
+						</span>
 						@endif
 					</td>
 					<td>
+						@if(!empty($curentChoreEntry->last_tracked_time))
 						<span id="chore-{{ $curentChoreEntry->chore_id }}-last-tracked-time">{{ $curentChoreEntry->last_tracked_time }}</span>
 						<time id="chore-{{ $curentChoreEntry->chore_id }}-last-tracked-time-timeago"
 							class="timeago timeago-contextual @if($curentChoreEntry->track_date_only == 1) timeago-date-only @endif"
 							datetime="{{ $curentChoreEntry->last_tracked_time }}"></time>
+						@else
+						<span id="chore-{{ $curentChoreEntry->chore_id }}-last-tracked-time">-</span>
+						<time id="chore-{{ $curentChoreEntry->chore_id }}-last-tracked-time-timeago"
+							class="timeago timeago-contextual @if($curentChoreEntry->track_date_only == 1) timeago-date-only @endif"></time>
+						@endif
 					</td>
 
 					<td class="@if(!GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS) d-none @endif">
@@ -216,6 +249,14 @@
 							{{ FindObjectInArrayByPropertyValue($users, 'id', $curentChoreEntry->next_execution_assigned_to_user_id)->display_name }}
 							@else
 							<span>-</span>
+							@endif
+							@if($curentChoreEntry->is_reassigned == 1)
+							<span id="chore-{{ $curentChoreEntry->chore_id }}-reassigned-icon"
+								class="text-muted"
+								data-toggle="tooltip"
+								title="{{ $__t('Reassigned') }}">
+								<i class="fa-solid fa-exchange-alt"></i>
+							</span>
 							@endif
 						</span>
 					</td>
@@ -256,6 +297,52 @@
 				<button type="button"
 					class="btn btn-secondary"
 					data-dismiss="modal">{{ $__t('Close') }}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade"
+	id="reschedule-chore-modal"
+	tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content text-center">
+			<div class="modal-header d-block">
+				<h4 class="modal-title">{{ $__t('Reschedule next execution') }}</h4>
+				<h5 id="reschedule-chore-modal-title"
+					class="text-muted"></h5>
+			</div>
+			<div class="modal-body">
+				<form id="reschedule-chore-form"
+					novalidate>
+
+					@include('components.datetimepicker', array(
+					'id' => 'reschedule_time',
+					'label' => 'Next estimated tracking',
+					'format' => 'YYYY-MM-DD HH:mm:ss',
+					'initWithNow' => false,
+					'limitEndToNow' => false,
+					'limitStartToNow' => false,
+					'invalidFeedback' => $__t('This can only be in the future')
+					))
+
+					@include('components.userpicker', array(
+					'label' => 'Assigned to',
+					'users' => $users
+					))
+
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="reschedule-chore-clear-button"
+					type="button"
+					class="btn btn-success mr-auto">{{ $__t('Reset') }}</button>
+				<button type="button"
+					class="btn btn-secondary"
+					data-dismiss="modal">{{ $__t('Cancel') }}</button>
+				<button id="reschedule-chore-save-button"
+					type="button"
+					class="btn btn-primary">{{ $__t('OK') }}</button>
 			</div>
 		</div>
 	</div>

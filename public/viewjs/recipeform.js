@@ -30,6 +30,11 @@ $('.save-recipe').on('click', function(e)
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("recipe-form", true))
+	{
+		return;
+	}
+
 	var jsonData = $('#recipe-form').serializeJSON();
 	Grocy.FrontendHelpers.BeginUiBusy("recipe-form");
 
@@ -111,11 +116,11 @@ $('#recipe-form input').keyup(function(event)
 
 $('#recipe-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('recipe-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('recipe-form'))
 		{
 			return false;
 		}
@@ -301,14 +306,14 @@ $('#save-recipe-include-button').on('click', function(e)
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("recipe-include-form", true))
+	{
+		return false;
+	}
+
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
-	}
-
-	if (document.getElementById("recipe-include-form").checkValidity() === false) //There is at least one validation error
-	{
-		return false;
 	}
 
 	var nestingId = $("#recipe-include-form").data("recipe-nesting-id");
@@ -385,4 +390,19 @@ $(window).on("message", function(e)
 			}
 		);
 	}
+});
+
+$(document).on('click', '.recipe-grocycode-label-print', function(e)
+{
+	e.preventDefault();
+	document.activeElement.blur();
+
+	var recipeId = $(e.currentTarget).attr('data-recipe-id');
+	Grocy.Api.Get('recipes/' + recipeId + '/printlabel', function(labelData)
+	{
+		if (Grocy.Webhooks.labelprinter !== undefined)
+		{
+			Grocy.FrontendHelpers.RunWebhook(Grocy.Webhooks.labelprinter, labelData);
+		}
+	});
 });

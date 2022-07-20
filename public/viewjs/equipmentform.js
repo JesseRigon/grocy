@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("equipment-form", true))
+	{
+		return;
+	}
+
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
@@ -83,7 +88,7 @@
 						Grocy.Api.UploadFile($("#instruction-manual")[0].files[0], 'equipmentmanuals', jsonData.instruction_manual_file_name,
 							function(result)
 							{
-								window.location.href = U('/equipment');;
+								window.location.href = U('/equipment');
 							},
 							function(xhr)
 							{
@@ -94,7 +99,7 @@
 					}
 					else
 					{
-						window.location.href = U('/equipment');;
+						window.location.href = U('/equipment');
 					}
 				});
 			},
@@ -114,11 +119,11 @@ $('#equipment-form input').keyup(function(event)
 
 $('#equipment-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('equipment-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('equipment-form'))
 		{
 			return false;
 		}

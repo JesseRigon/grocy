@@ -4,6 +4,11 @@ $('#save-shoppinglist-button').on('click', function(e)
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("shoppinglist-form", true))
+	{
+		return;
+	}
+
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
@@ -59,7 +64,11 @@ $('#save-shoppinglist-button').on('click', function(e)
 					Grocy.Api.Get('stock/products/' + jsonData.product_id,
 						function(productDetails)
 						{
-							window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", displayAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(displayAmount, $("#qu_id option:selected").text(), $("#qu_id option:selected").attr("data-qu-name-plural")), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
+							if (GetUriParam("product") !== undefined)
+							{
+								window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", displayAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(displayAmount, $("#qu_id option:selected").text(), $("#qu_id option:selected").attr("data-qu-name-plural"), true), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
+							}
+
 							window.parent.postMessage(WindowMessageBag("ShoppingListChanged", $("#shopping_list_id").val().toString()), Grocy.BaseUrl);
 							window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
 						},
@@ -96,7 +105,11 @@ $('#save-shoppinglist-button').on('click', function(e)
 						Grocy.Api.Get('stock/products/' + jsonData.product_id,
 							function(productDetails)
 							{
-								window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", displayAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(displayAmount, $("#qu_id option:selected").text(), $("#qu_id option:selected").attr("data-qu-name-plural")), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
+								if (GetUriParam("product") !== undefined)
+								{
+									window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", displayAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(displayAmount, $("#qu_id option:selected").text(), $("#qu_id option:selected").attr("data-qu-name-plural"), true), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
+								}
+
 								window.parent.postMessage(WindowMessageBag("ShoppingListChanged", $("#shopping_list_id").val().toString()), Grocy.BaseUrl);
 								window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
 							},
@@ -138,7 +151,7 @@ $('#save-shoppinglist-button').on('click', function(e)
 						Grocy.Api.Get('stock/products/' + jsonData.product_id,
 							function(productDetails)
 							{
-								window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", displayAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(displayAmount, $("#qu_id option:selected").text(), $("#qu_id option:selected").attr("data-qu-name-plural")), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
+								window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", displayAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(displayAmount, $("#qu_id option:selected").text(), $("#qu_id option:selected").attr("data-qu-name-plural"), true), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
 								window.parent.postMessage(WindowMessageBag("ShoppingListChanged", $("#shopping_list_id").val().toString()), Grocy.BaseUrl);
 								window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
 							},
@@ -209,10 +222,6 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 });
 
 Grocy.FrontendHelpers.ValidateForm('shoppinglist-form');
-setTimeout(function()
-{
-	Grocy.Components.ProductPicker.GetInputElement().focus();
-}, 250);
 
 if (Grocy.EditMode === "edit")
 {
@@ -236,11 +245,11 @@ $('#shoppinglist-form input').keyup(function(event)
 
 $('#shoppinglist-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('shoppinglist-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('shoppinglist-form'))
 		{
 			return false;
 		}
@@ -266,14 +275,21 @@ if (GetUriParam("amount") !== undefined)
 
 if (GetUriParam("embedded") !== undefined)
 {
-	if (GetUriParam("product") !== undefined)
+	if (GetUriParam("product") !== undefined || Grocy.EditMode == "edit")
 	{
-		Grocy.Components.ProductPicker.GetPicker().trigger('change');
+		if (GetUriParam("updateexistingproduct") != null)
+		{
+			Grocy.Components.ProductPicker.GetPicker().trigger('change');
+		}
+
 		$("#display_amount").focus();
 	}
 	else
 	{
-		Grocy.Components.ProductPicker.GetInputElement().focus();
+		setTimeout(function()
+		{
+			Grocy.Components.ProductPicker.GetInputElement().focus();
+		}, 250);
 	}
 }
 
@@ -284,7 +300,7 @@ eitherRequiredFields.on('input', function()
 	eitherRequiredFields.not(this).prop('required', !$(this).val().length);
 	Grocy.FrontendHelpers.ValidateForm('shoppinglist-form');
 });
-
+eitherRequiredFields.trigger("input");
 
 if (GetUriParam("product-name") != null)
 {

@@ -35,13 +35,13 @@
 					type="button"
 					data-toggle="collapse"
 					data-target="#table-filter-row">
-					<i class="fas fa-filter"></i>
+					<i class="fa-solid fa-filter"></i>
 				</button>
 				<button class="btn btn-outline-dark d-md-none mt-2 order-1 order-md-3"
 					type="button"
 					data-toggle="collapse"
 					data-target="#related-links">
-					<i class="fas fa-ellipsis-v"></i>
+					<i class="fa-solid fa-ellipsis-v"></i>
 				</button>
 			</div>
 			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
@@ -85,7 +85,7 @@
 			class="border-top border-bottom my-2 py-1">
 			<div id="table-filter-row"
 				data-status-filter="belowminstockamount"
-				class="collapse normal-message status-filter-message responsive-button @if(!GROCY_FEATURE_FLAG_STOCK) d-none @else d-md-inline-block @endif"><span class="d-block d-md-none">{{count($missingProducts)}} <i class="fas fa-exclamation-circle"></i></span><span class="d-none d-md-block">{{ $__n(count($missingProducts), '%s product is below defined min. stock amount', '%s products are below defined min. stock amount') }}</span></div>
+				class="collapse normal-message status-filter-message responsive-button @if(!GROCY_FEATURE_FLAG_STOCK) d-none @else d-md-inline-block @endif"><span class="d-block d-md-none">{{count($missingProducts)}} <i class="fa-solid fa-exclamation-circle"></i></span><span class="d-none d-md-block">{{ $__n(count($missingProducts), '%s product is below defined min. stock amount', '%s products are below defined min. stock amount') }}</span></div>
 			<div id="related-links"
 				class="float-right mt-1 collapse d-md-block">
 				<a class="btn btn-primary responsive-button btn-sm mb-1 show-as-dialog-link d-none d-md-inline-block"
@@ -102,11 +102,13 @@
 					href="#">
 					{{ $__t('Add all list items to stock') }}
 				</a>
+				@if(!boolval($userSettings['shopping_list_auto_add_below_min_stock_amount']))
 				<a id="add-products-below-min-stock-amount"
 					class="btn btn-outline-primary btn-sm mb-1 responsive-button @if(!GROCY_FEATURE_FLAG_STOCK) d-none @endif"
 					href="#">
 					{{ $__t('Add products that are below defined min. stock amount') }}
 				</a>
+				@endif
 				<a id="add-overdue-expired-products"
 					class="btn btn-outline-primary btn-sm mb-1 responsive-button @if(!GROCY_FEATURE_FLAG_STOCK) d-none @endif"
 					href="#">
@@ -122,7 +124,7 @@
 	<div class="col-12 col-md-5">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-search"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-search"></i></span>
 			</div>
 			<input type="text"
 				id="search"
@@ -133,7 +135,7 @@
 	<div class="col-12 col-md-4 col-lg-5">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="status-filter">
@@ -147,11 +149,12 @@
 	</div>
 	<div class="col">
 		<div class="float-right">
-			<a id="clear-filter-button"
+			<button id="clear-filter-button"
 				class="btn btn-sm btn-outline-info"
-				href="#">
-				{{ $__t('Clear filter') }}
-			</a>
+				data-toggle="tooltip"
+				title="{{ $__t('Clear filter') }}">
+				<i class="fa-solid fa-filter-circle-xmark"></i>
+			</button>
 		</div>
 	</div>
 </div>
@@ -168,15 +171,15 @@
 							data-toggle="tooltip"
 							title="{{ $__t('Table options') }}"
 							data-table-selector="#shoppinglist-table"
-							href="#"><i class="fas fa-eye"></i></a>
+							href="#"><i class="fa-solid fa-eye"></i></a>
 					</th>
-					<th>{{ $__t('Product') }} / <em>{{ $__t('Note') }}</em></th>
+					<th class="allow-grouping">{{ $__t('Product') }} / <em>{{ $__t('Note') }}</em></th>
 					<th>{{ $__t('Amount') }}</th>
-					<th>{{ $__t('Product group') }}</th>
+					<th class="allow-grouping">{{ $__t('Product group') }}</th>
 					<th class="d-none">Hidden status</th>
 					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Last price (Unit)') }}</th>
 					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Last price (Total)') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Default store') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif allow-grouping">{{ $__t('Default store') }}</th>
 					<th>{{ $__t('Barcodes') }}</th>
 
 					@include('components.userfields_thead', array(
@@ -200,14 +203,14 @@
 							data-toggle="tooltip"
 							data-placement="right"
 							title="{{ $__t('Mark this item as done') }}">
-							<i class="fas fa-check"></i>
+							<i class="fa-solid fa-check"></i>
 						</a>
 						<a class="btn btn-sm btn-info show-as-dialog-link"
 							href="{{ $U('/shoppinglistitem/' . $listItem->id . '?embedded&list=' . $selectedShoppingListId ) }}"
 							data-toggle="tooltip"
 							data-placement="right"
 							title="{{ $__t('Edit this item') }}">
-							<i class="fas fa-edit"></i>
+							<i class="fa-solid fa-edit"></i>
 						</a>
 						<a class="btn btn-sm btn-danger shoppinglist-delete-button"
 							href="#"
@@ -215,12 +218,12 @@
 							data-toggle="tooltip"
 							data-placement="right"
 							title="{{ $__t('Delete this item') }}">
-							<i class="fas fa-trash"></i>
+							<i class="fa-solid fa-trash"></i>
 						</a>
 						<a class="btn btn-sm btn-primary @if(!GROCY_FEATURE_FLAG_STOCK) d-none @endif @if(empty($listItem->product_id)) disabled @else shopping-list-stock-add-workflow-list-item-button @endif"
 							href="{{ $U('/purchase?embedded&flow=shoppinglistitemtostock&product=') }}{{ $listItem->product_id }}&amount={{ $listItem->amount }}&listitemid={{ $listItem->id }}&quId={{ $listItem->qu_id }}"
 							@if(!empty($listItem->product_id)) data-toggle="tooltip" title="{{ $__t('Add this item to stock') }}" @endif>
-							<i class="fas fa-box"></i>
+							<i class="fa-solid fa-box"></i>
 						</a>
 					</td>
 					<td class="product-name-cell cursor-link"
@@ -242,7 +245,7 @@
 					@endif
 					<td data-order={{
 						$listItem->amount }}>
-						<span class="locale-number locale-number-quantity-amount">{{ $listItem->amount }}</span> @if(!empty($listItem->product_id)){{ $__n($listItem->amount, $listItem->qu_name, $listItem->qu_name_plural) }}@endif
+						<span class="locale-number locale-number-quantity-amount">{{ $listItem->amount }}</span> @if(!empty($listItem->product_id)){{ $__n($listItem->amount, $listItem->qu_name, $listItem->qu_name_plural, true) }}@endif
 					</td>
 					<td>
 						@if(!empty($listItem->product_group_name)) {{ $listItem->product_group_name }} @else <span class="font-italic font-weight-light">{{ $__t('Ungrouped') }}</span> @endif
@@ -376,7 +379,7 @@
 							@if(!empty($listItem->product_id)) {{ $listItem->product_name }}<br>@endif<em>{!! nl2br($listItem->note) !!}</em>
 						</td>
 						<td>
-							<span class="locale-number locale-number-quantity-amount">{{ $listItem->amount }}</span> @if(!empty($listItem->product_id)){{ $__n($listItem->amount, $listItem->qu_name, $listItem->qu_name_plural) }}@endif
+							<span class="locale-number locale-number-quantity-amount">{{ $listItem->amount }}</span> @if(!empty($listItem->product_id)){{ $__n($listItem->amount, $listItem->qu_name, $listItem->qu_name_plural, true) }}@endif
 						</td>
 						<td>
 							@if(!empty($listItem->product_group_name)) {{ $listItem->product_group_name }} @else <span class="font-italic font-weight-light">{{ $__t('Ungrouped') }}</span> @endif
@@ -400,7 +403,7 @@
 	<div class="w-75 print-layout-container print-layout-type-list d-none">
 		@foreach($listItems as $listItem)
 		<div class="py-0">
-			<span class="locale-number locale-number-quantity-amount">{{ $listItem->amount }}</span> @if(!empty($listItem->product_id)){{ $__n($listItem->amount, $listItem->qu_name, $listItem->qu_name_plural) }}@endif
+			<span class="locale-number locale-number-quantity-amount">{{ $listItem->amount }}</span> @if(!empty($listItem->product_id)){{ $__n($listItem->amount, $listItem->qu_name, $listItem->qu_name_plural, true) }}@endif
 			@if(!empty($listItem->product_id)) {{ $listItem->product_name }}<br>@endif<em>{!! nl2br($listItem->note) !!}</em>
 		</div><br>
 		@endforeach

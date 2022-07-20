@@ -1,11 +1,18 @@
-﻿$('#save-choretracking-button').on('click', function(e)
+﻿$('.save-choretracking-button').on('click', function(e)
 {
 	e.preventDefault();
+
+	if (!Grocy.FrontendHelpers.ValidateForm("choretracking-form", true))
+	{
+		return;
+	}
 
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
 	}
+
+	var skipped = $(e.currentTarget).hasClass("skip");
 
 	var jsonForm = $('#choretracking-form').serializeJSON();
 	Grocy.FrontendHelpers.BeginUiBusy("choretracking-form");
@@ -13,14 +20,14 @@
 	Grocy.Api.Get('chores/' + jsonForm.chore_id,
 		function(choreDetails)
 		{
-			Grocy.Api.Post('chores/' + jsonForm.chore_id + '/execute', { 'tracked_time': Grocy.Components.DateTimePicker.GetValue(), 'done_by': $("#user_id").val() },
+			Grocy.Api.Post('chores/' + jsonForm.chore_id + '/execute', { 'tracked_time': Grocy.Components.DateTimePicker.GetValue(), 'done_by': $("#user_id").val(), 'skipped': skipped },
 				function(result)
 				{
 					Grocy.EditObjectId = result.id;
 					Grocy.Components.UserfieldsForm.Save(function()
 					{
 						Grocy.FrontendHelpers.EndUiBusy("choretracking-form");
-						toastr.success(__t('Tracked execution of chore %1$s on %2$s', choreDetails.chore.name, Grocy.Components.DateTimePicker.GetValue()) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoChoreExecution(' + result.id + ')"><i class="fas fa-undo"></i> ' + __t("Undo") + '</a>');
+						toastr.success(__t('Tracked execution of chore %1$s on %2$s', choreDetails.chore.name, Grocy.Components.DateTimePicker.GetValue()) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoChoreExecution(' + result.id + ')"><i class="fa-solid fa-undo"></i> ' + __t("Undo") + '</a>');
 						Grocy.Components.ChoreCard.Refresh($('#chore_id').val());
 
 						$('#chore_id').val('');
@@ -58,6 +65,7 @@ $('#chore_id').on('change', function(e)
 		Grocy.Api.Get('objects/chores/' + choreId,
 			function(chore)
 			{
+
 				if (chore.track_date_only == 1)
 				{
 					Grocy.Components.DateTimePicker.ChangeFormat("YYYY-MM-DD");
@@ -68,6 +76,17 @@ $('#chore_id').on('change', function(e)
 					Grocy.Components.DateTimePicker.ChangeFormat("YYYY-MM-DD HH:mm:ss");
 					Grocy.Components.DateTimePicker.SetValue(moment().format("YYYY-MM-DD HH:mm:ss"));
 				}
+
+				if (chore.period_type == "manually")
+				{
+					$(".save-choretracking-button.skip").addClass("disabled");
+				}
+				else
+				{
+					$(".save-choretracking-button.skip").removeClass("disabled");
+				}
+
+				Grocy.FrontendHelpers.ValidateForm('choretracking-form');
 			},
 			function(xhr)
 			{
@@ -104,17 +123,17 @@ $('#choretracking-form input').keyup(function(event)
 
 $('#choretracking-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('choretracking-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('choretracking-form'))
 		{
 			return false;
 		}
 		else
 		{
-			$('#save-choretracking-button').click();
+			$('.save-choretracking-button').first().click();
 		}
 	}
 });

@@ -21,7 +21,7 @@
 <div class="datetimepicker-wrapper form-group {{ $additionalGroupCssClasses }}">
 	<label for="{{ $id }}">{{ $__t($label) }}
 		@if(!empty($hint))
-		&nbsp;<i class="fas fa-question-circle text-muted"
+		&nbsp;<i class="fa-solid fa-question-circle text-muted"
 			data-toggle="tooltip"
 			data-trigger="hover click"
 			title="{{ $hint }}"></i>
@@ -46,9 +46,7 @@
 				inputmode="numeric"
 				@endif
 				@if($isRequired)
-				@if($isRequired)
 				required
-				@endif
 				@endif
 				class="form-control datetimepicker-input @if(!empty($additionalCssClasses)){{ $additionalCssClasses }}@endif"
 				data-target="#{{ $id }}"
@@ -62,7 +60,7 @@
 			<div class="input-group-append"
 				data-target="#{{ $id }}"
 				data-toggle="datetimepicker">
-				<div class="input-group-text"><i class="fas fa-calendar"></i></div>
+				<div class="input-group-text"><i class="fa-solid fa-calendar"></i></div>
 			</div>
 			<div class="invalid-feedback">{{ $invalidFeedback }}</div>
 		</div>
@@ -76,7 +74,8 @@
 					id="datetimepicker-shortcut"
 					name="datetimepicker-shortcut"
 					value="1"
-					data-datetimepicker-shortcut-value="{{ $shortcutValue }}">
+					data-datetimepicker-shortcut-value="{{ $shortcutValue }}"
+					tabindex="-1">
 				<label class="form-check-label custom-control-label"
 					for="datetimepicker-shortcut">{{ $__t($shortcutLabel) }}
 				</label>

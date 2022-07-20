@@ -56,10 +56,35 @@
 					name="from_qu_id">
 					<option></option>
 					@foreach($quantityunits as $quantityunit)
-					<option @if(($product
-						!=null
-						&&
-						$quantityunit->id == $product->qu_id_stock) || ($defaultQuUnit != null && $quantityunit->id == $defaultQuUnit->id))) selected="selected" @endif value="{{ $quantityunit->id }}" data-plural-form="{{ $quantityunit->name_plural }}">{{ $quantityunit->name }}</option>
+					@php
+					$selected = false;
+					if ($mode == 'edit')
+					{
+					if ($quantityunit->id == $quConversion->from_qu_id)
+					{
+					$selected = true;
+					}
+					}
+					else
+					{
+					if ($product != null && $quantityunit->id == $product->qu_id_stock)
+					{
+					$selected = true;
+					}
+					else
+					{
+					if ($quantityunit->id == $defaultQuUnit->id)
+					{
+					$selected = true;
+					}
+					}
+					}
+					@endphp
+					<option @if($selected)
+						selected="selected"
+						@endif
+						value="{{ $quantityunit->id }}"
+						data-plural-form="{{ $quantityunit->name_plural }}">{{ $quantityunit->name }}</option>
 					@endforeach
 				</select>
 				<div class="invalid-feedback">{{ $__t('A quantity unit is required') }}</div>
@@ -89,24 +114,11 @@
 			'decimals' => $userSettings['stock_decimal_places_amounts'],
 			'value' => $value,
 			'additionalHtmlElements' => '<p id="qu-conversion-info"
+				class="form-text text-info d-none mb-0"></p>
+			<p id="qu-conversion-inverse-info"
 				class="form-text text-info d-none"></p>',
 			'additionalCssClasses' => 'input-group-qu locale-number-input locale-number-quantity-amount'
 			))
-
-			<div class="form-group @if($mode == 'edit') d-none @endif">
-				<div class="custom-control custom-checkbox">
-					<input checked
-						class="form-check-input custom-control-input"
-						type="checkbox"
-						id="create_inverse"
-						name="create_inverse:skip"
-						value="1">
-					<label class="form-check-label custom-control-label"
-						for="create_inverse">{{ $__t('Create inverse QU conversion') }}</label>
-				</div>
-				<span id="qu-conversion-inverse-info"
-					class="form-text text-info d-none"></span>
-			</div>
 
 			@include('components.userfieldsform', array(
 			'userfields' => $userfields,

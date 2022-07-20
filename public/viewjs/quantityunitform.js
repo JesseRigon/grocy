@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("quantityunit-form", true))
+	{
+		return;
+	}
+
 	var jsonData = $('#quantityunit-form').serializeJSON();
 	Grocy.FrontendHelpers.BeginUiBusy("quantityunit-form");
 
@@ -105,7 +110,7 @@ $('#quantityunit-form input').keyup(function(event)
 		$("#qu-conversion-headline-info").text("");
 	}
 
-	if (document.getElementById('quantityunit-form').checkValidity() === false) //There is at least one validation error
+	if (!Grocy.FrontendHelpers.ValidateForm('quantityunit-form'))
 	{
 		$("#qu-conversion-add-button").addClass("disabled");
 	}
@@ -119,11 +124,11 @@ $('#quantityunit-form input').keyup(function(event)
 
 $('#quantityunit-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('quantityunit-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('quantityunit-form'))
 		{
 			return false;
 		}

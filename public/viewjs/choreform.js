@@ -2,12 +2,19 @@
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("chore-form", true))
+	{
+		return;
+	}
+
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
 	}
 
 	var jsonData = $('#chore-form').serializeJSON();
+	jsonData.start_date = Grocy.Components.DateTimePicker.GetValue();
+
 	if (Grocy.FeatureFlags.GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS)
 	{
 		jsonData.assignment_config = $("#assignment_config").val().join(",");
@@ -79,11 +86,11 @@ $('#chore-form input').keyup(function(event)
 
 $('#chore-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('chore-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('chore-form'))
 		{
 			return false;
 		}
@@ -107,6 +114,23 @@ Grocy.Components.UserfieldsForm.Load();
 $('#name').focus();
 Grocy.FrontendHelpers.ValidateForm('chore-form');
 
+if (Grocy.EditMode == "edit")
+{
+	Grocy.Api.Get('objects/chores_log?limit=1&query[]=chore_id=' + Grocy.EditObjectId,
+		function(journalEntries)
+		{
+			if (journalEntries.length > 0)
+			{
+				$(".datetimepicker-input").attr("disabled", "");
+			}
+		},
+		function(xhr)
+		{
+			console.error(xhr);
+		}
+	);
+}
+
 setTimeout(function()
 {
 	$(".input-group-chore-period-type").trigger("change");
@@ -119,7 +143,7 @@ setTimeout(function()
 	Grocy.Components.ProductPicker.GetPicker().trigger('change');
 }, 100);
 
-$('.input-group-chore-period-type').on('change', function(e)
+$('.input-group-chore-period-type').on('change keyup', function(e)
 {
 	var periodType = $('#period_type').val();
 	var periodDays = $('#period_days').val();
@@ -127,43 +151,43 @@ $('.input-group-chore-period-type').on('change', function(e)
 
 	$(".period-type-input").addClass("d-none");
 	$(".period-type-" + periodType).removeClass("d-none");
-	$('#chore-period-type-info').attr("data-original-title", "");
 	$("#period_config").val("");
 
 	if (periodType === 'manually')
 	{
-		$('#chore-period-type-info').attr("data-original-title", __t('This means the next execution of this chore is not scheduled'));
+		$('#chore-schedule-info').text(__t('This means the next execution of this chore is not scheduled'));
+		$("#period_days").val(1);
+		$("#period_interval").val(1);
 	}
-	else if (periodType === 'dynamic-regular')
+	else if (periodType === 'hourly')
 	{
-		$("label[for='period_days']").text(__t("Period days"));
-		$("#period_days").attr("min", "0");
-		$("#period_days").removeAttr("max");
-		$('#chore-period-type-info').attr("data-original-title", __t('This means the next execution of this chore is scheduled %s days after the last execution', periodDays.toString()));
+		$('#chore-schedule-info').text(__n(periodInterval, "This means the next execution of this chore is scheduled %s hour after the last execution", "This means the next execution of this chore is scheduled %s hours after the last execution"));
 	}
 	else if (periodType === 'daily')
 	{
-		$('#chore-period-type-info').attr("data-original-title", __t('This means the next execution of this chore is scheduled 1 day after the last execution'));
-		$('#chore-period-interval-info').attr("data-original-title", __t('This means the next execution of this chore should only be scheduled every %s days', periodInterval.toString()));
+		$('#chore-schedule-info').text(__n(periodInterval, "This means the next execution of this chore is scheduled at the same time (based on the start date) every day", "This means the next execution of this chore is scheduled at the same time (based on the start date) every %s days"));
 	}
 	else if (periodType === 'weekly')
 	{
-		$('#chore-period-type-info').attr("data-original-title", __t('This means the next execution of this chore is scheduled 1 day after the last execution, but only for the weekdays selected below'));
+		$('#chore-schedule-info').text(__n(periodInterval, "This means the next execution of this chore is scheduled every week on the selected weekdays", "This means the next execution of this chore is scheduled every %s weeks on the selected weekdays"));
 		$("#period_config").val($(".period-type-weekly input:checkbox:checked").map(function() { return this.value; }).get().join(","));
-		$('#chore-period-interval-info').attr("data-original-title", __t('This means the next execution of this chore should only be scheduled every %s weeks', periodInterval.toString()));
 	}
 	else if (periodType === 'monthly')
 	{
-		$('#chore-period-type-info').attr("data-original-title", __t('This means the next execution of this chore is scheduled on the below selected day of each month'));
+		$('#chore-schedule-info').text(__n(periodInterval, "This means the next execution of this chore is scheduled on the selected day every month", "This means the next execution of this chore is scheduled on the selected day every %s months"));
 		$("label[for='period_days']").text(__t("Day of month"));
 		$("#period_days").attr("min", "1");
 		$("#period_days").attr("max", "31");
-		$('#chore-period-interval-info').attr("data-original-title", __t('This means the next execution of this chore should only be scheduled every %s months', periodInterval.toString()));
 	}
 	else if (periodType === 'yearly')
 	{
-		$('#chore-period-type-info').attr("data-original-title", __t('This means the next execution of this chore is scheduled 1 year after the last execution'));
-		$('#chore-period-interval-info').attr("data-original-title", __t('This means the next execution of this chore should only be scheduled every %s years', periodInterval.toString()));
+		$('#chore-schedule-info').text(__n(periodInterval, 'This means the next execution of this chore is scheduled every year on the same day (based on the start date)', 'This means the next execution of this chore is scheduled every %s years on the same day (based on the start date)'));
+	}
+	else if (periodType === 'adaptive')
+	{
+		$('#chore-schedule-info').text(__t('This means the next execution of this chore is scheduled dynamically based on the past average execution frequency'));
+		$("#period_days").val(1);
+		$("#period_interval").val(1);
 	}
 
 	Grocy.FrontendHelpers.ValidateForm('chore-form');
@@ -179,23 +203,23 @@ $('.input-group-chore-assignment-type').on('change', function(e)
 
 	if (assignmentType === 'no-assignment')
 	{
-		$('#chore-assignment-type-info').attr("data-original-title", __t('This means the next execution of this chore will not be assigned to anyone'));
+		$('#chore-assignment-type-info').text(__t('This means the next execution of this chore will not be assigned to anyone'));
 	}
 	else if (assignmentType === 'who-least-did-first')
 	{
-		$('#chore-assignment-type-info').attr("data-original-title", __t('This means the next execution of this chore will be assigned to the one who executed it least'));
+		$('#chore-assignment-type-info').text(__t('This means the next execution of this chore will be assigned to the one who executed it least'));
 		$("#assignment_config").attr("required", "");
 		$("#assignment_config").removeAttr("disabled");
 	}
 	else if (assignmentType === 'random')
 	{
-		$('#chore-assignment-type-info').attr("data-original-title", __t('This means the next execution of this chore will be assigned randomly'));
+		$('#chore-assignment-type-info').text(__t('This means the next execution of this chore will be assigned randomly'));
 		$("#assignment_config").attr("required", "");
 		$("#assignment_config").removeAttr("disabled");
 	}
 	else if (assignmentType === 'in-alphabetical-order')
 	{
-		$('#chore-assignment-type-info').attr("data-original-title", __t('This means the next execution of this chore will be assigned to the next one in alphabetical order'));
+		$('#chore-assignment-type-info').text(__t('This means the next execution of this chore will be assigned to the next one in alphabetical order'));
 		$("#assignment_config").attr("required", "");
 		$("#assignment_config").removeAttr("disabled");
 	}

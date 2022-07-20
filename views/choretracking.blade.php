@@ -19,7 +19,7 @@
 					for="chore_id">
 					{{ $__t('Chore') }}
 					<i id="barcode-lookup-hint"
-						class="fas fa-barcode float-right mt-1"></i>
+						class="fa-solid fa-barcode float-right mt-1"></i>
 				</label>
 				<select class="form-control combobox barcodescanner-input"
 					id="chore_id"
@@ -63,8 +63,9 @@
 			'entity' => 'chores_log'
 			))
 
-			<button id="save-choretracking-button"
-				class="btn btn-success">{{ $__t('OK') }}</button>
+			<button class="btn btn-success save-choretracking-button">{{ $__t('OK') }}</button>
+
+			<button class="btn btn-secondary save-choretracking-button skip">{{ $__t('Skip') }}</button>
 
 		</form>
 	</div>

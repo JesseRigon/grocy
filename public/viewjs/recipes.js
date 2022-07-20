@@ -3,7 +3,9 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 },
+		{ 'visible': false, 'targets': 2 },
 		{ "type": "html-num-fmt", "targets": 2 },
+		{ "type": "html-num-fmt", "targets": 3 }
 	].concat($.fn.dataTable.defaults.columnDefs),
 	select: {
 		style: 'single',
@@ -80,7 +82,7 @@ $("#search").on("keyup", Delay(function()
 	}
 
 	$(".recipe-gallery-item").removeClass("d-none");
-	$(".recipe-gallery-item .card-title:not(:contains_case_insensitive(" + value + "))").parent().parent().parent().addClass("d-none");
+	$(".recipe-gallery-item .card-title-search:not(:contains_case_insensitive(" + value + "))").parent().parent().parent().addClass("d-none");
 }, 200));
 
 $("#clear-filter-button").on("click", function()
@@ -99,7 +101,7 @@ $("#status-filter").on("change", function()
 		value = "";
 	}
 
-	recipesTables.column(recipesTables.colReorder.transpose(5)).search(value).draw();
+	recipesTables.column(recipesTables.colReorder.transpose(6)).search(value).draw();
 
 	$('.recipe-gallery-item').removeClass('d-none');
 	if (value !== "")
@@ -279,10 +281,33 @@ recipesTables.on('select', function(e, dt, type, indexes)
 	{
 		var selectedRecipeId = $(recipesTables.row(indexes[0]).node()).data("recipe-id");
 		var currentRecipeId = location.search.split('recipe=')[1];
-		if (selectedRecipeId.toString() !== currentRecipeId)
+
+		if (BoolVal(Grocy.UserSettings.recipes_show_list_side_by_side))
 		{
-			UpdateUriParam("recipe", selectedRecipeId.toString());
-			window.location.reload();
+			if (selectedRecipeId.toString() !== currentRecipeId)
+			{
+				UpdateUriParam("recipe", selectedRecipeId.toString());
+				window.location.reload();
+			}
+		}
+		else
+		{
+			bootbox.dialog({
+				message: '<iframe height="650px" class="embed-responsive" src="' + U("/recipes?embedded&recipe=") + selectedRecipeId + '#fullscreen"></iframe>',
+				size: 'extra-large',
+				backdrop: true,
+				closeButton: false,
+				buttons: {
+					cancel: {
+						label: __t('Close'),
+						className: 'btn-secondary responsive-button',
+						callback: function()
+						{
+							bootbox.hideAll();
+						}
+					}
+				}
+			});
 		}
 	}
 });
@@ -291,7 +316,31 @@ $(".recipe-gallery-item").on("click", function(e)
 {
 	e.preventDefault();
 
-	window.location.href = U('/recipes?tab=gallery&recipe=' + $(this).data("recipe-id"));
+	var selectedRecipeId = $(this).data("recipe-id");
+
+	if (BoolVal(Grocy.UserSettings.recipes_show_list_side_by_side))
+	{
+		window.location.href = U('/recipes?tab=gallery&recipe=' + selectedRecipeId);
+	}
+	else
+	{
+		bootbox.dialog({
+			message: '<iframe height="650px" class="embed-responsive" src="' + U("/recipes?embedded&recipe=") + selectedRecipeId + '#fullscreen"></iframe>',
+			size: 'extra-large',
+			backdrop: true,
+			closeButton: false,
+			buttons: {
+				cancel: {
+					label: __t('Close'),
+					className: 'btn-secondary responsive-button',
+					callback: function()
+					{
+						bootbox.hideAll();
+					}
+				}
+			}
+		});
+	}
 });
 
 $(".recipe-fullscreen").on('click', function(e)
@@ -367,3 +416,29 @@ if (window.location.hash === "#fullscreen")
 }
 
 LoadImagesLazy();
+
+$(document).on('click', '.recipe-grocycode-label-print', function(e)
+{
+	e.preventDefault();
+	document.activeElement.blur();
+
+	var recipeId = $(e.currentTarget).attr('data-recipe-id');
+	Grocy.Api.Get('recipes/' + recipeId + '/printlabel', function(labelData)
+	{
+		if (Grocy.Webhooks.labelprinter !== undefined)
+		{
+			Grocy.FrontendHelpers.RunWebhook(Grocy.Webhooks.labelprinter, labelData);
+		}
+	});
+});
+
+$(document).on('click', '.ingredient-done-button', function(e)
+{
+	e.preventDefault();
+
+	// Remove the focus from the current button
+	// to prevent that the tooltip stays until clicked anywhere else
+	document.activeElement.blur();
+
+	$(e.currentTarget).parent().toggleClass("text-strike-through");
+});

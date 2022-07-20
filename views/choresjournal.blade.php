@@ -13,7 +13,7 @@
 				type="button"
 				data-toggle="collapse"
 				data-target="#table-filter-row">
-				<i class="fas fa-filter"></i>
+				<i class="fa-solid fa-filter"></i>
 			</button>
 		</div>
 	</div>
@@ -26,7 +26,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-search"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-search"></i></span>
 			</div>
 			<input type="text"
 				id="search"
@@ -37,7 +37,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Chore') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Chore') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="chore-filter">
@@ -51,7 +51,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-clock"></i>&nbsp;{{ $__t('Date range') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-clock"></i>&nbsp;{{ $__t('Date range') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="daterange-filter">
@@ -66,11 +66,12 @@
 	</div>
 	<div class="col">
 		<div class="float-right">
-			<a id="clear-filter-button"
+			<button id="clear-filter-button"
 				class="btn btn-sm btn-outline-info"
-				href="#">
-				{{ $__t('Clear filter') }}
-			</a>
+				data-toggle="tooltip"
+				title="{{ $__t('Clear filter') }}">
+				<i class="fa-solid fa-filter-circle-xmark"></i>
+			</button>
 		</div>
 	</div>
 </div>
@@ -86,12 +87,12 @@
 							data-toggle="tooltip"
 							title="{{ $__t('Table options') }}"
 							data-table-selector="#chores-journal-table"
-							href="#"><i class="fas fa-eye"></i></a>
+							href="#"><i class="fa-solid fa-eye"></i></a>
 					</th>
-					<th>{{ $__t('Chore') }}</th>
+					<th class="allow-grouping">{{ $__t('Chore') }}</th>
 					<th>{{ $__t('Tracked time') }}</th>
 					@if(GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS)
-					<th>{{ $__t('Done by') }}</th>
+					<th class="allow-grouping">{{ $__t('Done by') }}</th>
 					@endif
 
 					@include('components.userfields_thead', array(
@@ -102,7 +103,7 @@
 			<tbody class="d-none">
 				@foreach($choresLog as $choreLogEntry)
 				<tr id="chore-execution-{{ $choreLogEntry->id }}-row"
-					class="@if($choreLogEntry->undone == 1) text-muted @endif">
+					class="@if($choreLogEntry->undone == 1) text-muted @endif @if($choreLogEntry->skipped == 1) font-italic @endif">
 					<td class="fit-content border-right">
 						<a class="btn btn-secondary btn-xs undo-chore-execution-button permission-CHORE_UNDO_EXECUTION @if($choreLogEntry->undone == 1) disabled @endif"
 							href="#"
@@ -110,7 +111,7 @@
 							data-toggle="tooltip"
 							data-placement="left"
 							title="{{ $__t('Undo chore execution') }}">
-							<i class="fas fa-undo"></i>
+							<i class="fa-solid fa-undo"></i>
 						</a>
 					</td>
 					<td>
@@ -126,6 +127,9 @@
 						<span>{{ $choreLogEntry->tracked_time }}</span>
 						<time class="timeago timeago-contextual @if(FindObjectInArrayByPropertyValue($chores, 'id', $choreLogEntry->chore_id)->track_date_only == 1) timeago-date-only @endif"
 							datetime="{{ $choreLogEntry->tracked_time }}"></time>
+						@if($choreLogEntry->skipped == 1)
+						<span class="text-muted">{{ $__t('Skipped') }}</span>
+						@endif
 					</td>
 					@if(GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS)
 					<td>

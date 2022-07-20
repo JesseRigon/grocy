@@ -93,6 +93,10 @@ msgstr "Russisch"
 msgid "sk_SK"
 msgstr "Slovaaks"
 
+# Slovenian
+msgid "sl"
+msgstr ""
+
 # Swedish
 msgid "sv_SE"
 msgstr "Slovaaks"
@@ -120,3 +124,7 @@ msgstr "Tamils"
 # Finnish
 msgid "fi"
 msgstr "Fins"
+
+# Catalan
+msgid "ca"
+msgstr ""

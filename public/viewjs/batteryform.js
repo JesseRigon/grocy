@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("battery-form", true))
+	{
+		return;
+	}
+
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
@@ -68,11 +73,11 @@ $('#battery-form input').keyup(function(event)
 
 $('#battery-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('battery-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('battery-form'))
 		{
 			return false;
 		}
@@ -88,7 +93,7 @@ $(document).on('click', '.battery-grocycode-label-print', function(e)
 	e.preventDefault();
 	document.activeElement.blur();
 
-	var batteryId = $(e.currentTarget).attr('data-chore-id');
+	var batteryId = $(e.currentTarget).attr('data-battery-id');
 	Grocy.Api.Get('batteries/' + batteryId + '/printlabel', function(labelData)
 	{
 		if (Grocy.Webhooks.labelprinter !== undefined)

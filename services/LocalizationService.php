@@ -17,13 +17,13 @@ class LocalizationService
 
 	protected $Po;
 
-	protected $PoUserStrings;
-
 	protected $Pot;
 
 	protected $PotMain;
 
 	protected $Translator;
+
+	protected $TranslatorQu;
 
 	private static $instanceMap = [];
 
@@ -31,7 +31,7 @@ class LocalizationService
 	{
 		if (GROCY_MODE === 'dev')
 		{
-			if ($this->Pot->find('', $text) === false && $this->PoUserStrings->find('', $text) === false && empty($text) === false)
+			if ($this->Pot->find('', $text) === false && empty($text) === false)
 			{
 				$translation = new Translation('', $text);
 				$this->PotMain[] = $translation;
@@ -69,11 +69,28 @@ class LocalizationService
 		return $this->Po->toJsonString();
 	}
 
-	public function __n($number, $singularForm, $pluralForm)
+	public function GetPoAsJsonStringQu()
+	{
+		return $this->PoQu->toJsonString();
+	}
+
+	public function __n($number, $singularForm, $pluralForm, $isQu = false)
 	{
 		$this->CheckAndAddMissingTranslationToPot($singularForm);
 
-		return sprintf($this->Translator->ngettext($singularForm, $pluralForm, abs(floatval($number))), $number);
+		if (empty($pluralForm))
+		{
+			$pluralForm = $singularForm;
+		}
+
+		if ($isQu)
+		{
+			return sprintf($this->TranslatorQu->ngettext($singularForm, $pluralForm, abs(floatval($number))), $number);
+		}
+		else
+		{
+			return sprintf($this->Translator->ngettext($singularForm, $pluralForm, abs(floatval($number))), $number);
+		}
 	}
 
 	public function __t($text, ...$placeholderValues)
@@ -140,9 +157,6 @@ class LocalizationService
 			}
 		}
 
-		$this->PoUserStrings = new Translations();
-		$this->PoUserStrings->setDomain('grocy/userstrings');
-
 		$this->Po = Translations::fromPoFile(__DIR__ . "/../localization/$culture/strings.po");
 
 		if (file_exists(__DIR__ . "/../localization/$culture/chore_assignment_types.po"))
@@ -185,6 +199,11 @@ class LocalizationService
 			$this->Po = $this->Po->mergeWith(Translations::fromPoFile(__DIR__ . "/../localization/$culture/demo_data.po"));
 		}
 
+		$this->Translator = new Translator();
+		$this->Translator->loadTranslations($this->Po);
+
+		$this->PoQu = new Translations();
+
 		$quantityUnits = null;
 		try
 		{
@@ -197,6 +216,8 @@ class LocalizationService
 
 		if ($quantityUnits !== null)
 		{
+			$this->PoQu->setHeader(Translations::HEADER_PLURAL, $this->Po->getHeader(Translations::HEADER_PLURAL));
+
 			foreach ($quantityUnits as $quantityUnit)
 			{
 				$translation = new Translation('', $quantityUnit['name']);
@@ -204,13 +225,11 @@ class LocalizationService
 				$translation->setPlural($quantityUnit['name_plural']);
 				$translation->setPluralTranslations(preg_split('/\r\n|\r|\n/', $quantityUnit['plural_forms']));
 
-				$this->PoUserStrings[] = $translation;
+				$this->PoQu[] = $translation;
 			}
 
-			$this->Po = $this->Po->mergeWith($this->PoUserStrings);
-		}
-
-		$this->Translator = new Translator();
-		$this->Translator->loadTranslations($this->Po);
+			$this->TranslatorQu = new Translator();
+			$this->TranslatorQu->loadTranslations($this->PoQu);
+		};
 	}
 }

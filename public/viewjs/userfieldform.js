@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("userfield-form", true))
+	{
+		return;
+	}
+
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
@@ -72,11 +77,11 @@ $('#userfield-form select').change(function(event)
 
 $('#userfield-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('userfield-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('userfield-form'))
 		{
 			return false;
 		}
@@ -101,6 +106,9 @@ $("#type").on("change", function(e)
 		$("#config").parent().addClass("d-none");
 		$("#config-hint").text("");
 	}
+
+	$("#default-value-group").addClass("d-none");
+	$("#default-value-group.userfield-type-" + value).removeClass("d-none");
 });
 
 $('#entity').focus();

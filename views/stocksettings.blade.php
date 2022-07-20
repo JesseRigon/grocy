@@ -63,6 +63,21 @@
 			'min' => -1,
 			'additionalCssClasses' => 'user-setting-control'
 			))
+
+			@if(GROCY_FEATURE_FLAG_STOCK_PRODUCT_OPENED_TRACKING)
+			<div class="form-group">
+				<div class="custom-control custom-checkbox">
+					<input type="checkbox"
+						class="form-check-input custom-control-input user-setting-control"
+						id="product_presets_treat_opened_as_out_of_stock"
+						data-setting-key="product_presets_treat_opened_as_out_of_stock">
+					<label class="form-check-label custom-control-label"
+						for="product_presets_treat_opened_as_out_of_stock">
+						{{ $__t('Treat opened as out of stock') }}
+					</label>
+				</div>
+			</div>
+			@endif
 		</div>
 
 		<h4 class="mt-2">{{ $__t('Stock overview') }}</h4>
@@ -158,10 +173,19 @@
 		))
 
 		@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)
+
 		@include('components.numberpicker', array(
-		'id' => 'stock_decimal_places_prices',
-		'additionalAttributes' => 'data-setting-key="stock_decimal_places_prices"',
-		'label' => 'Decimal places allowed for prices',
+		'id' => 'stock_decimal_places_prices_input',
+		'additionalAttributes' => 'data-setting-key="stock_decimal_places_prices_input"',
+		'label' => 'Decimal places allowed for prices (input)',
+		'min' => 0,
+		'additionalCssClasses' => 'user-setting-control'
+		))
+
+		@include('components.numberpicker', array(
+		'id' => 'stock_decimal_places_prices_display',
+		'additionalAttributes' => 'data-setting-key="stock_decimal_places_prices_display"',
+		'label' => 'Decimal places allowed for prices (display)',
 		'min' => 0,
 		'additionalCssClasses' => 'user-setting-control'
 		))
@@ -175,13 +199,14 @@
 				<label class="form-check-label custom-control-label"
 					for="stock_auto_decimal_separator_prices">
 					{{ $__t('Add decimal separator automatically for price inputs') }}
-					<i class="fas fa-question-circle text-muted"
+					<i class="fa-solid fa-question-circle text-muted"
 						data-toggle="tooltip"
 						data-trigger="hover click"
 						title="{{ $__t('When enabled, you always have to enter the value including decimal places, the decimal separator will be automatically added based on the amount of allowed decimal places') }}"></i>
 				</label>
 			</div>
 		</div>
+
 		@endif
 
 		<a href="{{ $U('/stockoverview') }}"

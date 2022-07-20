@@ -4,12 +4,12 @@
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 },
 		{ 'visible': false, 'targets': 10 },
-		{ "type": "num", "targets": 1},
+		{ "type": "num", "targets": 1 },
 		{ "type": "num", "targets": 3 },
 		{ "type": "html", "targets": 4 },
-		{ "type": "html-num-fmt", "targets": 7},
-		{ "type": "html", "targets": 8},
-		{ "type": "html", "targets": 9}
+		{ "type": "html-num-fmt", "targets": 7 },
+		{ "type": "html", "targets": 8 },
+		{ "type": "html", "targets": 9 }
 	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#stockentries-table tbody').removeClass("d-none");
@@ -29,8 +29,22 @@ $.fn.dataTable.ext.search.push(function(settings, data, dataIndex)
 
 $("#clear-filter-button").on("click", function()
 {
+	$("#location-filter").val("all");
+	$("#location-filter").trigger("change");
 	Grocy.Components.ProductPicker.Clear();
 	stockEntriesTable.draw();
+});
+
+$("#location-filter").on("change", function()
+{
+	var value = $(this).val();
+	var text = $("#location-filter option:selected").text();
+	if (value === "all")
+	{
+		text = "";
+	}
+
+	stockEntriesTable.column(stockEntriesTable.colReorder.transpose(5)).search(text).draw();
 });
 
 Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
@@ -67,7 +81,7 @@ $(document).on('click', '.stock-consume-button', function(e)
 			Grocy.Api.Get('stock/products/' + productId,
 				function(result)
 				{
-					var toastMessage = __t('Removed %1$s of %2$s from stock', parseFloat(consumeAmount).toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(consumeAmount, result.quantity_unit_stock.name, result.quantity_unit_stock.name_plural), result.product.name) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoStockBookingEntry(' + bookingResponse[0].id + ',' + stockRowId + ')"><i class="fas fa-undo"></i> ' + __t("Undo") + '</a>';
+					var toastMessage = __t('Removed %1$s of %2$s from stock', parseFloat(consumeAmount).toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(consumeAmount, result.quantity_unit_stock.name, result.quantity_unit_stock.name_plural, true), result.product.name) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoStockBookingEntry(' + bookingResponse[0].id + ',' + stockRowId + ')"><i class="fa-solid fa-undo"></i> ' + __t("Undo") + '</a>';
 					if (wasSpoiled)
 					{
 						toastMessage += " (" + __t("Spoiled") + ")";
@@ -112,10 +126,26 @@ $(document).on('click', '.product-open-button', function(e)
 	Grocy.Api.Post('stock/products/' + productId + '/open', { 'amount': 1, 'stock_entry_id': specificStockEntryId },
 		function(bookingResponse)
 		{
-			button.addClass("disabled");
-			Grocy.FrontendHelpers.EndUiBusy();
-			toastr.success(__t('Marked %1$s of %2$s as opened', 1 + " " + productQuName, productName) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoStockBookingEntry(' + bookingResponse[0].id + ',' + stockRowId + ')"><i class="fas fa-undo"></i> ' + __t("Undo") + '</a>');
-			RefreshStockEntryRow(stockRowId);
+			Grocy.Api.Get('stock/products/' + productId,
+				function(result)
+				{
+					button.addClass("disabled");
+					Grocy.FrontendHelpers.EndUiBusy();
+					toastr.success(__t('Marked %1$s of %2$s as opened', 1 + " " + productQuName, productName) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoStockBookingEntry(' + bookingResponse[0].id + ',' + stockRowId + ')"><i class="fa-solid fa-undo"></i> ' + __t("Undo") + '</a>');
+
+					if (result.product.move_on_open == 1)
+					{
+						toastr.info('<span>' + __t("Moved to %1$s", result.default_consume_location.name) + "</span> <i class='fa-solid fa-exchange-alt'></i>");
+					}
+
+					RefreshStockEntryRow(stockRowId);
+				},
+				function(xhr)
+				{
+					Grocy.FrontendHelpers.EndUiBusy();
+					console.error(xhr);
+				}
+			);
 		},
 		function(xhr)
 		{
@@ -216,24 +246,48 @@ function RefreshStockEntryRow(stockRowId)
 					}
 				);
 
-				$('#stock-' + stockRowId + '-price').text(result.price);
-				$('#stock-' + stockRowId + '-purchased-date').text(result.purchased_date);
-				$('#stock-' + stockRowId + '-purchased-date-timeago').attr('datetime', result.purchased_date + ' 23:59:59');
-
-				var shoppingLocationName = "";
-				Grocy.Api.Get("objects/shopping_locations/" + result.shopping_location_id,
-					function(shoppingLocationResult)
+				Grocy.Api.Get("stock/products/" + result.product_id,
+					function(productDetails)
 					{
-						shoppingLocationName = shoppingLocationResult.name;
+						if (result.price == null || result.price.isEmpty())
+						{
+							result.price = 0;
+						}
 
-						$('#stock-' + stockRowId + '-shopping-location').attr('data-shopping-location-id', result.location_id);
-						$('#stock-' + stockRowId + '-shopping-location').text(shoppingLocationName);
+						$('#stock-' + stockRowId + '-price').text(__t("%1$s per %2$s", (Number.parseFloat(result.price) * Number.parseFloat(productDetails.product.qu_factor_purchase_to_stock)).toLocaleString(undefined, { style: "currency", currency: Grocy.Currency, minimumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_display, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_display }), productDetails.default_quantity_unit_purchase.name));
+						$('#stock-' + stockRowId + '-price').attr("data-original-title", __t("%1$s per %2$s", Number.parseFloat(result.price).toLocaleString(undefined, { style: "currency", currency: Grocy.Currency, minimumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_display, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_prices_display }), productDetails.quantity_unit_stock.name));
 					},
 					function(xhr)
 					{
 						console.error(xhr);
 					}
 				);
+
+				$('#stock-' + stockRowId + '-note').text(result.note);
+				$('#stock-' + stockRowId + '-purchased-date').text(result.purchased_date);
+				$('#stock-' + stockRowId + '-purchased-date-timeago').attr('datetime', result.purchased_date + ' 23:59:59');
+
+				if (result.shopping_location_id != null && !result.shopping_location_id.isEmpty())
+				{
+					var shoppingLocationName = "";
+					Grocy.Api.Get("objects/shopping_locations/" + result.shopping_location_id,
+						function(shoppingLocationResult)
+						{
+							shoppingLocationName = shoppingLocationResult.name;
+
+							$('#stock-' + stockRowId + '-shopping-location').attr('data-shopping-location-id', result.location_id);
+							$('#stock-' + stockRowId + '-shopping-location').text(shoppingLocationName);
+						},
+						function(xhr)
+						{
+							console.error(xhr);
+						}
+					);
+				}
+				else
+				{
+					$('#stock-' + stockRowId + '-shopping-location').text("");
+				}
 
 				if (result.open == 1)
 				{

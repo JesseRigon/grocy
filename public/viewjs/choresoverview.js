@@ -92,17 +92,30 @@ $(document).on('click', '.track-chore-button', function(e)
 
 	var choreId = $(e.currentTarget).attr('data-chore-id');
 	var choreName = $(e.currentTarget).attr('data-chore-name');
+	var skipped = $(e.currentTarget).hasClass("skip");
 
-	Grocy.Api.Get('objects/chores/' + choreId,
-		function(chore)
+	Grocy.Api.Get('chores/' + choreId,
+		function(choreDetails)
 		{
 			var trackedTime = moment().format('YYYY-MM-DD HH:mm:ss');
-			if (chore.track_date_only == 1)
+			if (skipped)
 			{
-				trackedTime = moment().format('YYYY-MM-DD');
+				trackedTime = moment(choreDetails.next_estimated_execution_time).format('YYYY-MM-DD HH:mm:ss');
 			}
 
-			Grocy.Api.Post('chores/' + choreId + '/execute', { 'tracked_time': trackedTime },
+			if (choreDetails.chore.track_date_only == 1)
+			{
+				if (skipped)
+				{
+					trackedTime = moment(choreDetails.next_estimated_execution_time).format('YYYY-MM-DD');
+				}
+				else
+				{
+					trackedTime = moment().format('YYYY-MM-DD');
+				}
+			}
+
+			Grocy.Api.Post('chores/' + choreId + '/execute', { 'tracked_time': trackedTime, 'skipped': skipped },
 				function()
 				{
 					Grocy.Api.Get('chores/' + choreId,
@@ -110,16 +123,23 @@ $(document).on('click', '.track-chore-button', function(e)
 						{
 							var choreRow = $('#chore-' + choreId + '-row');
 							var nextXDaysThreshold = moment().add($("#info-due-soon-chores").data("next-x-days"), "days");
+							var todayThreshold = moment().endOf("day");
 							var now = moment();
 							var nextExecutionTime = moment(result.next_estimated_execution_time);
 
 							choreRow.removeClass("table-warning");
 							choreRow.removeClass("table-danger");
+							choreRow.removeClass("table-info");
 							$('#chore-' + choreId + '-due-filter-column').html("");
 							if (nextExecutionTime.isBefore(now))
 							{
 								choreRow.addClass("table-danger");
 								$('#chore-' + choreId + '-due-filter-column').html("overdue");
+							}
+							else if (nextExecutionTime.isSameOrBefore(todayThreshold))
+							{
+								choreRow.addClass("table-info");
+								$('#chore-' + choreId + '-due-filter-column').html("duetoday");
 							}
 							else if (nextExecutionTime.isBefore(nextXDaysThreshold))
 							{
@@ -132,16 +152,28 @@ $(document).on('click', '.track-chore-button', function(e)
 							$('#chore-' + choreId + '-last-tracked-time').text(trackedTime);
 							$('#chore-' + choreId + '-last-tracked-time-timeago').attr('datetime', trackedTime);
 
-							if (result.chore.period_type == "dynamic-regular")
+							if (result.next_estimated_execution_time != null && !result.next_estimated_execution_time.isEmpty())
 							{
 								$('#chore-' + choreId + '-next-execution-time').text(result.next_estimated_execution_time);
 								$('#chore-' + choreId + '-next-execution-time-timeago').attr('datetime', result.next_estimated_execution_time);
+							}
+							else
+							{
+								$('#chore-' + choreId + '-next-execution-time').text("-");
+								$('#chore-' + choreId + '-next-execution-time-timeago').removeAttr('datetime');
 							}
 
 							if (result.chore.next_execution_assigned_to_user_id != null)
 							{
 								$('#chore-' + choreId + '-next-execution-assigned-user').text(result.next_execution_assigned_user.display_name);
 							}
+							else
+							{
+								$('#chore-' + choreId + '-next-execution-assigned-user').text("-");
+							}
+
+							$('#chore-' + choreId + '-rescheduled-icon').remove();
+							$('#chore-' + choreId + '-reassigned-icon').remove();
 
 							Grocy.FrontendHelpers.EndUiBusy();
 							toastr.success(__t('Tracked execution of chore %1$s on %2$s', choreName, trackedTime));
@@ -238,10 +270,10 @@ function RefreshStatistics()
 				}
 			});
 
-			$("#info-due-today-chores").html('<span class="d-block d-md-none">' + dueTodayCount + ' <i class="fas fa-clock"></i></span><span class="d-none d-md-block">' + __n(dueTodayCount, '%s chore is due to be done today', '%s chores are due to be done today'));
-			$("#info-due-soon-chores").html('<span class="d-block d-md-none">' + dueSoonCount + ' <i class="fas fa-clock"></i></span><span class="d-none d-md-block">' + __n(dueSoonCount, '%s chore is due to be done', '%s chores are due to be done') + ' ' + __n(nextXDays, 'within the next day', 'within the next %s days'));
-			$("#info-overdue-chores").html('<span class="d-block d-md-none">' + overdueCount + ' <i class="fas fa-times-circle"></i></span><span class="d-none d-md-block">' + __n(overdueCount, '%s chore is overdue to be done', '%s chores are overdue to be done'));
-			$("#info-assigned-to-me-chores").html('<span class="d-block d-md-none">' + assignedToMeCount + ' <i class="fas fa-exclamation-circle"></i></span><span class="d-none d-md-block">' + __n(assignedToMeCount, '%s chore is assigned to me', '%s chores are assigned to me'));
+			$("#info-due-today-chores").html('<span class="d-block d-md-none">' + dueTodayCount + ' <i class="fa-solid fa-clock"></i></span><span class="d-none d-md-block">' + __n(dueTodayCount, '%s chore is due to be done today', '%s chores are due to be done today'));
+			$("#info-due-soon-chores").html('<span class="d-block d-md-none">' + dueSoonCount + ' <i class="fa-solid fa-clock"></i></span><span class="d-none d-md-block">' + __n(dueSoonCount, '%s chore is due to be done', '%s chores are due to be done') + ' ' + __n(nextXDays, 'within the next day', 'within the next %s days'));
+			$("#info-overdue-chores").html('<span class="d-block d-md-none">' + overdueCount + ' <i class="fa-solid fa-times-circle"></i></span><span class="d-none d-md-block">' + __n(overdueCount, '%s chore is overdue to be done', '%s chores are overdue to be done'));
+			$("#info-assigned-to-me-chores").html('<span class="d-block d-md-none">' + assignedToMeCount + ' <i class="fa-solid fa-exclamation-circle"></i></span><span class="d-none d-md-block">' + __n(assignedToMeCount, '%s chore is assigned to me', '%s chores are assigned to me'));
 		},
 		function(xhr)
 		{
@@ -249,6 +281,105 @@ function RefreshStatistics()
 		}
 	);
 }
+
+$(document).on("click", ".reschedule-chore-button", function(e)
+{
+	e.preventDefault();
+
+	var choreId = $(e.currentTarget).attr("data-chore-id");
+	Grocy.EditObjectId = choreId;
+	Grocy.Api.Get("chores/" + choreId, function(choreDetails)
+	{
+		var prefillDate = choreDetails.next_estimated_execution_time || moment().format("YYYY-MM-DD HH:mm:ss");
+		if (choreDetails.chore.rescheduled_date != null && !choreDetails.chore.rescheduled_date.isEmpty())
+		{
+			prefillDate = choreDetails.chore.rescheduled_date;
+		}
+
+		if (choreDetails.chore.track_date_only == 1)
+		{
+			Grocy.Components.DateTimePicker.ChangeFormat("YYYY-MM-DD");
+			Grocy.Components.DateTimePicker.SetValue(moment(prefillDate).format("YYYY-MM-DD"));
+		}
+		else
+		{
+			Grocy.Components.DateTimePicker.ChangeFormat("YYYY-MM-DD HH:mm:ss");
+			Grocy.Components.DateTimePicker.SetValue(moment(prefillDate).format("YYYY-MM-DD HH:mm:ss"));
+		}
+
+		if (typeof choreDetails.chore.next_execution_assigned_to_user_id != "string")
+		{
+			choreDetails.chore.next_execution_assigned_to_user_id = "";
+		}
+		if (choreDetails.chore.next_execution_assigned_to_user_id != null && !choreDetails.chore.next_execution_assigned_to_user_id.isEmpty())
+		{
+			Grocy.Components.UserPicker.SetId(choreDetails.chore.next_execution_assigned_to_user_id)
+		}
+		else
+		{
+			Grocy.Components.UserPicker.SetValue("");
+			Grocy.Components.UserPicker.SetId(null);
+		}
+
+		$("#reschedule-chore-modal-title").text(choreDetails.chore.name);
+		$("#reschedule-chore-modal").modal("show");
+	});
+});
+
+$("#reschedule-chore-save-button").on("click", function(e)
+{
+	e.preventDefault();
+
+	if (!Grocy.FrontendHelpers.ValidateForm("reschedule-chore-form", true))
+	{
+		return;
+	}
+
+	Grocy.Api.Put('objects/chores/' + Grocy.EditObjectId, { "rescheduled_date": Grocy.Components.DateTimePicker.GetValue(), "rescheduled_next_execution_assigned_to_user_id": Grocy.Components.UserPicker.GetValue() },
+		function(result)
+		{
+			Grocy.Api.Post('chores/executions/calculate-next-assignments', { "chore_id": Grocy.EditObjectId },
+				function(result)
+				{
+					window.location.reload();
+				},
+				function(xhr)
+				{
+					console.error(xhr);
+				}
+			);
+		},
+		function(xhr)
+		{
+			Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response)
+		}
+	);
+});
+
+$("#reschedule-chore-clear-button").on("click", function(e)
+{
+	e.preventDefault();
+
+	Grocy.Api.Put('objects/chores/' + Grocy.EditObjectId, { "rescheduled_date": null, "rescheduled_next_execution_assigned_to_user_id": null },
+		function(result)
+		{
+			Grocy.Api.Post('chores/executions/calculate-next-assignments', { "chore_id": Grocy.EditObjectId },
+				function(result)
+				{
+					window.location.reload();
+				},
+				function(xhr)
+				{
+					console.error(xhr);
+				}
+			);
+		},
+		function(xhr)
+		{
+			Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response)
+		}
+	);
+});
 
 if (GetUriParam("user") !== undefined)
 {

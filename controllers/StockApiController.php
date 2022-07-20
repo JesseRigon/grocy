@@ -100,45 +100,39 @@ class StockApiController extends BaseApiController
 			}
 
 			$bestBeforeDate = null;
-
 			if (array_key_exists('best_before_date', $requestBody) && IsIsoDate($requestBody['best_before_date']))
 			{
 				$bestBeforeDate = $requestBody['best_before_date'];
 			}
 
 			$purchasedDate = date('Y-m-d');
-
 			if (array_key_exists('purchased_date', $requestBody) && IsIsoDate($requestBody['purchased_date']))
 			{
 				$purchasedDate = $requestBody['purchased_date'];
 			}
 
 			$price = null;
-
 			if (array_key_exists('price', $requestBody) && is_numeric($requestBody['price']))
 			{
 				$price = $requestBody['price'];
 			}
 
 			$locationId = null;
-
 			if (array_key_exists('location_id', $requestBody) && is_numeric($requestBody['location_id']))
 			{
 				$locationId = $requestBody['location_id'];
 			}
 
 			$shoppingLocationId = null;
-
 			if (array_key_exists('shopping_location_id', $requestBody) && is_numeric($requestBody['shopping_location_id']))
 			{
 				$shoppingLocationId = $requestBody['shopping_location_id'];
 			}
 
 			$transactionType = StockService::TRANSACTION_TYPE_PURCHASE;
-
-			if (array_key_exists('transaction_type', $requestBody) && !empty($requestBody['transactiontype']))
+			if (array_key_exists('transaction_type', $requestBody) && !empty($requestBody['transaction_type']))
 			{
-				$transactionType = $requestBody['transactiontype'];
+				$transactionType = $requestBody['transaction_type'];
 			}
 
 			$stockLabelType = 0;
@@ -147,7 +141,13 @@ class StockApiController extends BaseApiController
 				$stockLabelType = intval($requestBody['stock_label_type']);
 			}
 
-			$transactionId = $this->getStockService()->AddProduct($args['productId'], $requestBody['amount'], $bestBeforeDate, $transactionType, $purchasedDate, $price, $locationId, $shoppingLocationId, $unusedTransactionId, $stockLabelType);
+			$note = null;
+			if (array_key_exists('note', $requestBody))
+			{
+				$note = $requestBody['note'];
+			}
+
+			$transactionId = $this->getStockService()->AddProduct($args['productId'], $requestBody['amount'], $bestBeforeDate, $transactionType, $purchasedDate, $price, $locationId, $shoppingLocationId, $unusedTransactionId, $stockLabelType, false, $note);
 
 			$args['transactionId'] = $transactionId;
 			return $this->StockTransactions($request, $response, $args);
@@ -394,34 +394,36 @@ class StockApiController extends BaseApiController
 			}
 
 			$bestBeforeDate = null;
-
 			if (array_key_exists('best_before_date', $requestBody) && IsIsoDate($requestBody['best_before_date']))
 			{
 				$bestBeforeDate = $requestBody['best_before_date'];
 			}
 
 			$price = null;
-
 			if (array_key_exists('price', $requestBody) && is_numeric($requestBody['price']))
 			{
 				$price = $requestBody['price'];
 			}
 
 			$locationId = null;
-
 			if (array_key_exists('location_id', $requestBody) && is_numeric($requestBody['location_id']))
 			{
 				$locationId = $requestBody['location_id'];
 			}
 
 			$shoppingLocationId = null;
-
 			if (array_key_exists('shopping_location_id', $requestBody) && is_numeric($requestBody['shopping_location_id']))
 			{
 				$shoppingLocationId = $requestBody['shopping_location_id'];
 			}
 
-			$transactionId = $this->getStockService()->EditStockEntry($args['entryId'], $requestBody['amount'], $bestBeforeDate, $locationId, $shoppingLocationId, $price, $requestBody['open'], $requestBody['purchased_date']);
+			$note = null;
+			if (array_key_exists('note', $requestBody))
+			{
+				$note = $requestBody['note'];
+			}
+
+			$transactionId = $this->getStockService()->EditStockEntry($args['entryId'], $requestBody['amount'], $bestBeforeDate, $locationId, $shoppingLocationId, $price, $requestBody['open'], $requestBody['purchased_date'], $note);
 			$args['transactionId'] = $transactionId;
 			return $this->StockTransactions($request, $response, $args);
 		}
@@ -506,7 +508,13 @@ class StockApiController extends BaseApiController
 				$stockLabelType = intval($requestBody['stock_label_type']);
 			}
 
-			$transactionId = $this->getStockService()->InventoryProduct($args['productId'], $requestBody['new_amount'], $bestBeforeDate, $locationId, $price, $shoppingLocationId, $purchasedDate, $stockLabelType);
+			$note = null;
+			if (array_key_exists('note', $requestBody))
+			{
+				$note = $requestBody['note'];
+			}
+
+			$transactionId = $this->getStockService()->InventoryProduct($args['productId'], $requestBody['new_amount'], $bestBeforeDate, $locationId, $price, $shoppingLocationId, $purchasedDate, $stockLabelType, $note);
 			$args['transactionId'] = $transactionId;
 			return $this->StockTransactions($request, $response, $args);
 		}
@@ -575,6 +583,18 @@ class StockApiController extends BaseApiController
 		try
 		{
 			$args['productId'] = $this->getStockService()->GetProductIdFromBarcode($args['barcode']);
+
+			if (Grocycode::Validate($args['barcode']))
+			{
+				$gc = new Grocycode($args['barcode']);
+				if ($gc->GetExtraData())
+				{
+					$requestBody = $request->getParsedBody();
+					$requestBody['stock_entry_id'] = $gc->GetExtraData()[0];
+					$request = $request->withParsedBody($requestBody);
+				}
+			}
+
 			return $this->OpenProduct($request, $response, $args);
 		}
 		catch (\Exception $ex)
@@ -629,6 +649,11 @@ class StockApiController extends BaseApiController
 		}
 
 		return $this->FilteredApiResponse($response, $this->getStockService()->GetProductStockEntries($args['productId'], false, $allowSubproductSubstitution, true), $request->getQueryParams());
+	}
+
+	public function LocationStockEntries(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
+	{
+		return $this->FilteredApiResponse($response, $this->getStockService()->GetLocationStockEntries($args['locationId']), $request->getQueryParams());
 	}
 
 	public function ProductStockLocations(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)

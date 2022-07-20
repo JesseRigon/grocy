@@ -1,6 +1,11 @@
-﻿$('#save-task-button').on('click', function(e)
+﻿$('.save-task-button').on('click', function(e)
 {
 	e.preventDefault();
+
+	if (!Grocy.FrontendHelpers.ValidateForm("task-form", true))
+	{
+		return;
+	}
 
 	if ($(".combobox-menu-visible").length)
 	{
@@ -16,6 +21,8 @@
 
 	if (Grocy.EditMode === 'create')
 	{
+		var addAnother = $(e.currentTarget).hasClass("add-another");
+
 		Grocy.Api.Post('objects/tasks', jsonData,
 			function(result)
 			{
@@ -24,11 +31,25 @@
 				{
 					if (GetUriParam("embedded") !== undefined)
 					{
-						window.parent.postMessage(WindowMessageBag("Reload"), Grocy.BaseUrl);
+						if (addAnother)
+						{
+							window.location.href = U('/task/new?embedded');
+						}
+						else
+						{
+							window.parent.postMessage(WindowMessageBag("Reload"), Grocy.BaseUrl);
+						}
 					}
 					else
 					{
-						window.location.href = U('/tasks');
+						if (addAnother)
+						{
+							window.location.href = U('/task/new');
+						}
+						else
+						{
+							window.location.href = U('/tasks');
+						}
 					}
 				});
 			},
@@ -72,17 +93,17 @@ $('#task-form input').keyup(function(event)
 
 $('#task-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('task-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('task-form'))
 		{
 			return false;
 		}
 		else
 		{
-			$('#save-task-button').click();
+			$('.save-task-button').first().click();
 		}
 	}
 });

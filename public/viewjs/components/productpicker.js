@@ -51,6 +51,11 @@ Grocy.Components.ProductPicker.InAnyFlow = function()
 
 Grocy.Components.ProductPicker.FinishFlow = function()
 {
+	if (GetUriParam("flow") == "InplaceAddBarcodeToExistingProduct")
+	{
+		$("#product_id option[value=\"" + Grocy.Components.ProductPicker.GetValue() + "\"]").attr("data-additional-searchdata", (i, value) => `${value || ""}${GetUriParam("barcode")},`);
+	}
+
 	RemoveUriParam("flow");
 	RemoveUriParam("barcode");
 	RemoveUriParam("product-name");
@@ -122,11 +127,19 @@ if (!prefillProductId2.isEmpty())
 if (typeof prefillProductId !== "undefined")
 {
 	$('#product_id').val(prefillProductId);
-	$('#product_id').data('combobox').refresh();
-	$('#product_id').trigger('change');
 
-	var nextInputElement = $(Grocy.Components.ProductPicker.GetPicker().parent().data('next-input-selector').toString());
-	nextInputElement.focus();
+	if ($('#product_id').val() != null)
+	{
+		$('#product_id').data('combobox').refresh();
+		$('#product_id').trigger('change');
+
+		var nextInputElement = $(Grocy.Components.ProductPicker.GetPicker().parent().data('next-input-selector').toString());
+		nextInputElement.focus();
+	}
+	else
+	{
+		Grocy.Components.ProductPicker.GetInputElement().focus();
+	}
 }
 
 if (GetUriParam("flow") === "InplaceAddBarcodeToExistingProduct")
@@ -239,10 +252,10 @@ $('#product_id_text_input').on('blur', function(e)
 				}
 			};
 
-			if (!Grocy.FeatureFlags.DISABLE_BROWSER_BARCODE_CAMERA_SCANNING)
+			if (!Grocy.FeatureFlags.GROCY_FEATURE_FLAG_DISABLE_BROWSER_BARCODE_CAMERA_SCANNING)
 			{
 				buttons.retrycamerascanning = {
-					label: '<strong>C</strong> <i class="fas fa-camera"></i>',
+					label: '<strong>C</strong> <i class="fa-solid fa-camera"></i>',
 					className: 'btn-primary responsive-button retry-camera-scanning-button',
 					callback: function()
 					{
@@ -264,7 +277,7 @@ $('#product_id_text_input').on('blur', function(e)
 				{
 					if (barcodeResult.length > 0)
 					{
-						existsAsProduct = true;
+						existsAsBarcode = true;
 					}
 
 					Grocy.Api.Get('objects/products?query[]=name=' + input,

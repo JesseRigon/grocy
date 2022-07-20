@@ -171,12 +171,12 @@
 				<div class="invalid-feedback">{{ $__t('Mandatory Userfield') }}</div>
 			</div>
 			<div class="input-group-append userfield-file-delete">
-				<span class="input-group-text"><i class="fas fa-trash"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-trash"></i></span>
 			</div>
 			<div class="input-group-append">
 				<a href="#"
 					target="_blank"
-					class="input-group-text userfield-file-show d-none"><i class="fas fa-eye"></i></a>
+					class="input-group-text userfield-file-show d-none discrete-link"><i class="fa-solid fa-eye"></i></a>
 			</div>
 		</div>
 	</div>
@@ -196,12 +196,12 @@
 				<div class="invalid-feedback">{{ $__t('Mandatory Userfield') }}</div>
 			</div>
 			<div class="input-group-append userfield-file-delete">
-				<span class="input-group-text"><i class="fas fa-trash"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-trash"></i></span>
 			</div>
 		</div>
 		<img src=""
 			alt="{{ $userfield->name }}"
-			class="userfield-current-file userfield-file-show d-none lazy mt-1"
+			class="userfield-current-file userfield-file-show d-none lazy mt-1 discrete-link"
 			data-uf-name="{{ $userfield->name }}" />
 	</div>
 	@endif

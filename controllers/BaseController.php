@@ -126,10 +126,11 @@ class BaseController
 		$this->View->set('__t', function (string $text, ...$placeholderValues) use ($localizationService) {
 			return $localizationService->__t($text, $placeholderValues);
 		});
-		$this->View->set('__n', function ($number, $singularForm, $pluralForm) use ($localizationService) {
-			return $localizationService->__n($number, $singularForm, $pluralForm);
+		$this->View->set('__n', function ($number, $singularForm, $pluralForm, $isQu = false) use ($localizationService) {
+			return $localizationService->__n($number, $singularForm, $pluralForm, $isQu);
 		});
 		$this->View->set('LocalizationStrings', $localizationService->GetPoAsJsonString());
+		$this->View->set('LocalizationStringsQu', $localizationService->GetPoAsJsonStringQu());
 
 		// TODO: Better handle this generically based on the current language (header in .po file?)
 		$dir = 'ltr';
@@ -210,7 +211,7 @@ class BaseController
 		{
 			$htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
 			$htmlPurifierConfig->set('Cache.SerializerPath', GROCY_DATAPATH . '/viewcache');
-			$htmlPurifierConfig->set('HTML.Allowed', 'div,b,strong,i,em,u,a[href|title|target],iframe[src|width|height|frameborder],ul,ol,li,p[style],br,span[style],img[width|height|alt|src],table[border|width|style],tbody,tr,td,th,blockquote,*[style|class|id]');
+			$htmlPurifierConfig->set('HTML.Allowed', 'div,b,strong,i,em,u,a[href|title|target],iframe[src|width|height|frameborder],ul,ol,li,p[style],br,span[style],img[width|height|alt|src],table[border|width|style],tbody,tr,td,th,blockquote,*[style|class|id],h1,h2,h3,h4,h5,h6');
 			$htmlPurifierConfig->set('Attr.EnableID', true);
 			$htmlPurifierConfig->set('HTML.SafeIframe', true);
 			$htmlPurifierConfig->set('CSS.AllowedProperties', 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align');

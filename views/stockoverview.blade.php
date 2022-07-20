@@ -28,7 +28,7 @@
 				type="button"
 				data-toggle="collapse"
 				data-target="#related-links">
-				<i class="fas fa-ellipsis-v"></i>
+				<i class="fa-solid fa-ellipsis-v"></i>
 			</button>
 			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
 				id="related-links">
@@ -64,18 +64,19 @@
 			<div id="info-missing-products"
 				data-status-filter="belowminstockamount"
 				class="normal-message status-filter-message responsive-button"></div>
-			<div class="float-right">
-				<a class="btn btn-sm btn-outline-info d-md-none mt-1"
+			<div class="float-right mt-1">
+				<a class="btn btn-sm btn-outline-info d-md-none"
 					data-toggle="collapse"
 					href="#table-filter-row"
 					role="button">
-					<i class="fas fa-filter"></i>
+					<i class="fa-solid fa-filter"></i>
 				</a>
-				<a id="clear-filter-button"
-					class="btn btn-sm btn-outline-info mt-1"
-					href="#">
-					{{ $__t('Clear filter') }}
-				</a>
+				<button id="clear-filter-button"
+					class="btn btn-sm btn-outline-info"
+					data-toggle="tooltip"
+					title="{{ $__t('Clear filter') }}">
+					<i class="fa-solid fa-filter-circle-xmark"></i>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -85,7 +86,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-search"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-search"></i></span>
 			</div>
 			<input type="text"
 				id="search"
@@ -97,7 +98,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Location') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Location') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="location-filter">
@@ -112,7 +113,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Product group') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Product group') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="product-group-filter">
@@ -126,7 +127,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="status-filter">
@@ -155,26 +156,26 @@
 							data-toggle="tooltip"
 							title="{{ $__t('Table options') }}"
 							data-table-selector="#stock-overview-table"
-							href="#"><i class="fas fa-eye"></i></a>
+							href="#"><i class="fa-solid fa-eye"></i></a>
 					</th>
 					<th>{{ $__t('Product') }}</th>
-					<th>{{ $__t('Product group') }}</th>
+					<th class="allow-grouping">{{ $__t('Product group') }}</th>
 					<th>{{ $__t('Amount') }}</th>
 					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Value') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING) d-none @endif">{{ $__t('Next due date') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING) d-none @endif allow-grouping">{{ $__t('Next due date') }}</th>
 					<th class="d-none">Hidden location</th>
 					<th class="d-none">Hidden status</th>
 					<th class="d-none">Hidden product group</th>
 					<th>{{ $__t('Calories') }} ({{ $__t('Per stock quantity unit') }})</th>
 					<th>{{ $__t('Calories') }}</th>
-					<th>{{ $__t('Last purchased') }}</th>
+					<th class="allow-grouping">{{ $__t('Last purchased') }}</th>
 					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Last price') }}</th>
-					<th>{{ $__t('Min. stock amount') }}</th>
+					<th class="allow-grouping">{{ $__t('Min. stock amount') }}</th>
 					<th>{{ $__t('Product description') }}</th>
-					<th>{{ $__t('Parent product') }}</th>
-					<th>{{ $__t('Default location') }}</th>
+					<th class="allow-grouping">{{ $__t('Parent product') }}</th>
+					<th class="allow-grouping">{{ $__t('Default location') }}</th>
 					<th>{{ $__t('Product picture') }}</th>
-					<th>{{ $__t('Average price') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Average price') }}</th>
 
 					@include('components.userfields_thead', array(
 					'userfields' => $userfields
@@ -196,7 +197,7 @@
 							data-product-name="{{ $currentStockEntry->product_name }}"
 							data-product-qu-name="{{ $currentStockEntry->qu_unit_name }}"
 							data-consume-amount="{{ $currentStockEntry->quick_consume_amount }}">
-							<i class="fas fa-utensils"></i> <span class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->quick_consume_amount }}</span>
+							<i class="fa-solid fa-utensils"></i> <span class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->quick_consume_amount }}</span>
 						</a>
 						<a id="product-{{ $currentStockEntry->product_id }}-consume-all-button"
 							class="permission-STOCK_CONSUME btn btn-danger btn-sm product-consume-button @if($currentStockEntry->amount_aggregated == 0) disabled @endif"
@@ -209,7 +210,7 @@
 							data-product-qu-name="{{ $currentStockEntry->qu_unit_name }}"
 							data-consume-amount="@if($currentStockEntry->enable_tare_weight_handling == 1){{$currentStockEntry->tare_weight}}@else{{$currentStockEntry->amount}}@endif"
 							data-original-total-stock-amount="{{$currentStockEntry->amount}}">
-							<i class="fas fa-utensils"></i> {{ $__t('All') }}
+							<i class="fa-solid fa-utensils"></i> {{ $__t('All') }}
 						</a>
 						@if(GROCY_FEATURE_FLAG_STOCK_PRODUCT_OPENED_TRACKING)
 						<a class="btn btn-success btn-sm product-open-button @if($currentStockEntry->amount_aggregated < $currentStockEntry->quick_consume_amount || $currentStockEntry->amount_aggregated == $currentStockEntry->amount_opened_aggregated || $currentStockEntry->enable_tare_weight_handling == 1) disabled @endif"
@@ -221,45 +222,45 @@
 							data-product-name="{{ $currentStockEntry->product_name }}"
 							data-product-qu-name="{{ $currentStockEntry->qu_unit_name }}"
 							data-open-amount="{{ $currentStockEntry->quick_consume_amount }}">
-							<i class="fas fa-box-open"></i> <span class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->quick_consume_amount }}</span>
+							<i class="fa-solid fa-box-open"></i> <span class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->quick_consume_amount }}</span>
 						</a>
 						@endif
 						<div class="dropdown d-inline-block">
 							<button class="btn btn-sm btn-light text-secondary"
 								type="button"
 								data-toggle="dropdown">
-								<i class="fas fa-ellipsis-v"></i>
+								<i class="fa-solid fa-ellipsis-v"></i>
 							</button>
 							<div class="table-inline-menu dropdown-menu dropdown-menu-right">
 								@if(GROCY_FEATURE_FLAG_SHOPPINGLIST)
 								<a class="dropdown-item show-as-dialog-link permission-SHOPPINGLIST_ITEMS_ADD"
 									type="button"
 									href="{{ $U('/shoppinglistitem/new?embedded&updateexistingproduct&product=' . $currentStockEntry->product_id ) }}">
-									<span class="dropdown-item-icon"><i class="fas fa-shopping-cart"></i></span> <span class="dropdown-item-text">{{ $__t('Add to shopping list') }}</span>
+									<span class="dropdown-item-icon"><i class="fa-solid fa-shopping-cart"></i></span> <span class="dropdown-item-text">{{ $__t('Add to shopping list') }}</span>
 								</a>
 								<div class="dropdown-divider"></div>
 								@endif
 								<a class="dropdown-item show-as-dialog-link permission-STOCK_PURCHASE"
 									type="button"
 									href="{{ $U('/purchase?embedded&product=' . $currentStockEntry->product_id ) }}">
-									<span class="dropdown-item-icon"><i class="fas fa-cart-plus"></i></span> <span class="dropdown-item-text">{{ $__t('Purchase') }}</span>
+									<span class="dropdown-item-icon"><i class="fa-solid fa-cart-plus"></i></span> <span class="dropdown-item-text">{{ $__t('Purchase') }}</span>
 								</a>
 								<a class="dropdown-item show-as-dialog-link permission-STOCK_CONSUME @if($currentStockEntry->amount_aggregated <= 0) disabled @endif"
 									type="button"
 									href="{{ $U('/consume?embedded&product=' . $currentStockEntry->product_id ) }}">
-									<span class="dropdown-item-icon"><i class="fas fa-utensils"></i></span> <span class="dropdown-item-text">{{ $__t('Consume') }}</span>
+									<span class="dropdown-item-icon"><i class="fa-solid fa-utensils"></i></span> <span class="dropdown-item-text">{{ $__t('Consume') }}</span>
 								</a>
 								@if(GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING)
 								<a class="dropdown-item show-as-dialog-link permission-STOCK_TRANSFER @if($currentStockEntry->amount <= 0) disabled @endif"
 									type="button"
 									href="{{ $U('/transfer?embedded&product=' . $currentStockEntry->product_id) }}">
-									<span class="dropdown-item-icon"><i class="fas fa-exchange-alt"></i></span> <span class="dropdown-item-text">{{ $__t('Transfer') }}</span>
+									<span class="dropdown-item-icon"><i class="fa-solid fa-exchange-alt"></i></span> <span class="dropdown-item-text">{{ $__t('Transfer') }}</span>
 								</a>
 								@endif
 								<a class="dropdown-item show-as-dialog-link permission-STOCK_INVENTORY"
 									type="button"
 									href="{{ $U('/inventory?embedded&product=' . $currentStockEntry->product_id ) }}">
-									<span class="dropdown-item-icon"><i class="fas fa-list"></i></span> <span class="dropdown-item-text">{{ $__t('Inventory') }}</span>
+									<span class="dropdown-item-icon"><i class="fa-solid fa-list"></i></span> <span class="dropdown-item-text">{{ $__t('Inventory') }}</span>
 								</a>
 								@if(GROCY_FEATURE_FLAG_RECIPES)
 								<a class="dropdown-item"
@@ -291,13 +292,13 @@
 									href="{{ $U('/stockjournal/summary?embedded&product_id=') }}{{ $currentStockEntry->product_id }}">
 									<span class="dropdown-item-text">{{ $__t('Stock journal summary') }}</span>
 								</a>
-								<a class="dropdown-item permission-MASTER_DATA_EDIT"
+								<a class="dropdown-item permission-MASTER_DATA_EDIT link-return"
 									type="button"
-									href="{{ $U('/product/') }}{{ $currentStockEntry->product_id . '?returnto=%2Fstockoverview' }}">
+									data-href="{{ $U('/product/') }}{{ $currentStockEntry->product_id }}">
 									<span class="dropdown-item-text">{{ $__t('Edit product') }}</span>
 								</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item stockentry-grocycode-link"
+								<a class="dropdown-item"
 									type="button"
 									href="{{ $U('/product/' . $currentStockEntry->product_id . '/grocycode?download=true') }}">
 									{!! str_replace('grocycode', '<span class="ls-n1">grocycode</span>', $__t('Download %s grocycode', $__t('Product'))) !!}
@@ -321,17 +322,23 @@
 					<td>
 						@if($currentStockEntry->product_group_name !== null){{ $currentStockEntry->product_group_name }}@endif
 					</td>
-					<td data-order="{{ $currentStockEntry->amount }}">
-						<span id="product-{{ $currentStockEntry->product_id }}-amount"
-							class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->amount }}</span> <span id="product-{{ $currentStockEntry->product_id }}-qu-name">{{ $__n($currentStockEntry->amount, $currentStockEntry->qu_unit_name, $currentStockEntry->qu_unit_name_plural) }}</span>
-						<span id="product-{{ $currentStockEntry->product_id }}-opened-amount"
-							class="small font-italic">@if($currentStockEntry->amount_opened > 0){{ $__t('%s opened', $currentStockEntry->amount_opened) }}@endif</span>
+					<td data-order="@if($currentStockEntry->product_no_own_stock == 1){{ $currentStockEntry->amount_aggregated }}@else{{ $currentStockEntry->amount }}@endif">
+						<span class="@if($currentStockEntry->product_no_own_stock == 1) d-none @endif">
+							<span id="product-{{ $currentStockEntry->product_id }}-amount"
+								class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->amount }}</span> <span id="product-{{ $currentStockEntry->product_id }}-qu-name">{{ $__n($currentStockEntry->amount, $currentStockEntry->qu_unit_name, $currentStockEntry->qu_unit_name_plural) }}</span>
+							<span id="product-{{ $currentStockEntry->product_id }}-opened-amount"
+								class="small font-italic">@if($currentStockEntry->amount_opened > 0){{ $__t('%s opened', $currentStockEntry->amount_opened) }}@endif</span>
+						</span>
 						@if($currentStockEntry->is_aggregated_amount == 1)
-						<span class="pl-1 text-secondary">
-							<i class="fas fa-custom-sigma-sign"></i> <span id="product-{{ $currentStockEntry->product_id }}-amount-aggregated"
-								class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->amount_aggregated }}</span> {{ $__n($currentStockEntry->amount_aggregated, $currentStockEntry->qu_unit_name, $currentStockEntry->qu_unit_name_plural) }}
-							@if($currentStockEntry->amount_opened_aggregated > 0)<span id="product-{{ $currentStockEntry->product_id }}-opened-amount-aggregated"
-								class="small font-italic">{{ $__t('%s opened', $currentStockEntry->amount_opened_aggregated) }}</span>@endif
+						<span class="@if($currentStockEntry->product_no_own_stock == 0) pl-1 @endif text-secondary">
+							<i class="fa-solid fa-custom-sigma-sign"></i> <span id="product-{{ $currentStockEntry->product_id }}-amount-aggregated"
+								class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->amount_aggregated }}</span> {{ $__n($currentStockEntry->amount_aggregated, $currentStockEntry->qu_unit_name, $currentStockEntry->qu_unit_name_plural, true) }}
+							@if($currentStockEntry->amount_opened_aggregated > 0)
+							<span id="product-{{ $currentStockEntry->product_id }}-opened-amount-aggregated"
+								class="small font-italic">
+								{!! $__t('%s opened', '<span class="locale-number locale-number-quantity-amount">' . $currentStockEntry->amount_opened_aggregated . '</span>') !!}
+							</span>
+							@endif
 						</span>
 						@endif
 						@if(boolval($userSettings['show_icon_on_stock_overview_page_when_product_is_on_shopping_list']))
@@ -339,7 +346,7 @@
 						<span class="text-muted cursor-normal"
 							data-toggle="tooltip"
 							title="{{ $__t('This product is currently on a shopping list') }}">
-							<i class="fas fa-shopping-cart"></i>
+							<i class="fa-solid fa-shopping-cart"></i>
 						</span>
 						@endif
 						@endif
@@ -393,8 +400,16 @@
 						<time class="timeago timeago-contextual"
 							datetime="{{ $currentStockEntry->last_purchased }}"></time>
 					</td>
-					<td class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">
-						<span class="locale-number locale-number-currency">{{ $currentStockEntry->last_price }}</span>
+					<td data-order="{{$currentStockEntry->last_price}}"
+						class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">
+						@if(!empty($currentStockEntry->last_price))
+						<span data-toggle="tooltip"
+							data-trigger="hover click"
+							data-html="true"
+							title="{!! $__t('%1$s per %2$s', '<span class=\'locale-number locale-number-currency\'>' . $currentStockEntry->last_price . '</span>', $currentStockEntry->qu_unit_name) !!}">
+							{!! $__t('%1$s per %2$s', '<span class="locale-number locale-number-currency">' . floatval($currentStockEntry->last_price) * floatval($currentStockEntry->product_qu_factor_purchase_to_stock) . '</span>', $currentStockEntry->qu_purchase_unit_name) !!}
+						</span>
+						@endif
 					</td>
 					<td>
 						<span class="locale-number locale-number-quantity-amount">{{ $currentStockEntry->min_stock_amount }}</span>
@@ -415,8 +430,16 @@
 							class="lazy">
 						@endif
 					</td>
-					<td class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">
-						<span class="locale-number locale-number-currency">{{ $currentStockEntry->average_price }}</span>
+					<td data-order="{{$currentStockEntry->average_price}}"
+						class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">
+						@if(!empty($currentStockEntry->average_price))
+						<span data-toggle="tooltip"
+							data-trigger="hover click"
+							data-html="true"
+							title="{!! $__t('%1$s per %2$s', '<span class=\'locale-number locale-number-currency\'>' . $currentStockEntry->average_price . '</span>', $currentStockEntry->qu_unit_name) !!}">
+							{!! $__t('%1$s per %2$s', '<span class="locale-number locale-number-currency">' . floatval($currentStockEntry->average_price) * floatval($currentStockEntry->product_qu_factor_purchase_to_stock) . '</span>', $currentStockEntry->qu_purchase_unit_name) !!}
+						</span>
+						@endif
 					</td>
 
 					@include('components.userfields_tbody', array(

@@ -12,7 +12,7 @@
 			href="#"
 			data-toggle="tooltip"
 			title="{{ $__t('Edit chore') }}">
-			<i class="fas fa-edit"></i>
+			<i class="fa-solid fa-edit"></i>
 		</a>
 		<a id="chorecard-chore-journal-button"
 			class="btn btn-sm btn-outline-secondary py-0 mr-1 float-right disabled show-as-dialog-link"
@@ -28,6 +28,7 @@
 
 		<strong>{{ $__t('Tracked count') }}:</strong> <span id="chorecard-chore-tracked-count"
 			class="locale-number locale-number-generic"></span><br>
+		<strong>{{ $__t('Average execution frequency') }}:</strong> <span id="chorecard-average-execution-frequency"></span><br>
 		<strong>{{ $__t('Last tracked') }}:</strong> <span id="chorecard-chore-last-tracked"></span> <time id="chorecard-chore-last-tracked-timeago"
 			class="timeago timeago-contextual"></time><br>
 		@if(GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS)

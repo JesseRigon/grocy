@@ -16,11 +16,12 @@
 @php if(!isset($nextInputSelector)) { $nextInputSelector = false; } @endphp
 @php if(empty($additionalAttributes)) { $additionalAttributes = ''; } @endphp
 @php if(empty($additionalGroupCssClasses)) { $additionalGroupCssClasses = ''; } @endphp
+@php if(empty($activateNumberPad)) { $activateNumberPad = false; } @endphp
 
 <div class="datetimepicker2-wrapper form-group {{ $additionalGroupCssClasses }}">
 	<label for="{{ $id }}">{{ $__t($label) }}
 		@if(!empty($hint))
-		&nbsp;<i class="fas fa-question-circle text-muted"
+		&nbsp;<i class="fa-solid fa-question-circle text-muted"
 			data-toggle="tooltip"
 			data-trigger="hover click"
 			title="{{ $hint }}"></i>
@@ -41,10 +42,11 @@
 				$additionalAttributes
 				!!}
 				type="text"
-				@if($isRequired)
+				@if($activateNumberPad)
+				inputmode="numeric"
+				@endif
 				@if($isRequired)
 				required
-				@endif
 				@endif
 				class="form-control datetimepicker2-input @if(!empty($additionalCssClasses)){{ $additionalCssClasses }}@endif"
 				data-target="#{{ $id }}"
@@ -58,7 +60,7 @@
 			<div class="input-group-append"
 				data-target="#{{ $id }}"
 				data-toggle="datetimepicker">
-				<div class="input-group-text"><i class="fas fa-calendar"></i></div>
+				<div class="input-group-text"><i class="fa-solid fa-calendar"></i></div>
 			</div>
 			<div class="invalid-feedback">{{ $invalidFeedback }}</div>
 		</div>
@@ -74,7 +76,8 @@
 				id="datetimepicker2-shortcut"
 				name="datetimepicker2-shortcut"
 				value="1"
-				data-datetimepicker2-shortcut-value="{{ $shortcutValue }}">
+				data-datetimepicker2-shortcut-value="{{ $shortcutValue }}"
+				tabindex="-1">
 			<label class="form-check-label custom-control-label"
 				for="datetimepicker2-shortcut">{{ $__t($shortcutLabel) }}
 			</label>

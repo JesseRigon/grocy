@@ -13,7 +13,7 @@
 			href="#"
 			data-toggle="tooltip"
 			title="{{ $__t('Edit product') }}">
-			<i class="fas fa-edit"></i>
+			<i class="fa-solid fa-edit"></i>
 		</a>
 		<a id="productcard-product-journal-button"
 			class="btn btn-sm btn-outline-secondary py-0 mr-1 float-right disabled show-as-dialog-link"
@@ -38,24 +38,44 @@
 				href="#productcard-product-description">{{ $__t('Show more') }}</a>
 		</div>
 
-		<strong>{{ $__t('Stock amount') }}:</strong> <span id="productcard-product-stock-amount"
-			class="locale-number locale-number-quantity-amount"></span> <span id="productcard-product-stock-qu-name"></span>
+		<strong>{{ $__t('Stock amount') }}:</strong>
+		<span id="productcard-product-stock-amount-wrapper">
+			<span id="productcard-product-stock-amount"
+				class="locale-number locale-number-quantity-amount"></span> <span id="productcard-product-stock-qu-name"></span>
+		</span>
 		<span id="productcard-product-stock-opened-amount"
 			class="small font-italic locale-number locale-number-quantity-amount"></span>
 		<span id="productcard-aggregated-amounts"
-			class="pl-2 text-secondary d-none"><i class="fas fa-custom-sigma-sign"></i> <span id="productcard-product-stock-amount-aggregated"
+			class="pl-2 text-secondary d-none"><i class="fa-solid fa-custom-sigma-sign"></i> <span id="productcard-product-stock-amount-aggregated"
 				class="locale-number locale-number-quantity-amount"></span> <span id="productcard-product-stock-qu-name-aggregated"></span> <span id="productcard-product-stock-opened-amount-aggregated locale-number locale-number-quantity-amount"
 				class="small font-italic"></span></span><br>
-		@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)<strong>{{ $__t('Stock value') }}:</strong> <span id="productcard-product-stock-value"
-			class="locale-number locale-number-currency"></span><br>@endif
+
+		@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)
+		<strong>{{ $__t('Stock value') }}:</strong> <span id="productcard-product-stock-value"
+			class="locale-number locale-number-currency"></span><br>
+		@endif
+
 		@if(GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING)<strong>{{ $__t('Default location') }}:</strong> <span id="productcard-product-location"></span><br>@endif
 		<strong>{{ $__t('Last purchased') }}:</strong> <span id="productcard-product-last-purchased"></span> <time id="productcard-product-last-purchased-timeago"
 			class="timeago timeago-contextual"></time><br>
 		<strong>{{ $__t('Last used') }}:</strong> <span id="productcard-product-last-used"></span> <time id="productcard-product-last-used-timeago"
 			class="timeago timeago-contextual"></time><br>
-		@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)<strong>{{ $__t('Last price') }}:</strong> <span id="productcard-product-last-price"></span><br>@endif
-		@if (GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)<strong>{{ $__t('Average price') }}:</strong> <span id="productcard-product-average-price"></span><br>@endif
-		@if (GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING)<strong>{{ $__t('Average shelf life') }}:</strong> <span id="productcard-product-average-shelf-life"></span><br>@endif
+
+		@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)<strong>
+			{{ $__t('Last price') }}:</strong> <span id="productcard-product-last-price"
+			data-toggle="tooltip"
+			data-trigger="hover click"></span>
+		<br>
+		@endif
+
+		@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)
+		<strong>{{ $__t('Average price') }}:</strong> <span id="productcard-product-average-price"
+			data-toggle="tooltip"
+			data-trigger="hover click"></span>
+		<br>
+		@endif
+
+		@if(GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING)<strong>{{ $__t('Average shelf life') }}:</strong> <span id="productcard-product-average-shelf-life"></span><br>@endif
 		<strong>{{ $__t('Spoil rate') }}:</strong> <span id="productcard-product-spoil-rate"></span>
 
 		<p class="w-75 mt-3 mx-auto"><img id="productcard-product-picture"

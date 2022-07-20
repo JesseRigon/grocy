@@ -36,12 +36,20 @@
 	.fc-axis div {
 		transform: translateX(-50%) translateY(-50%) rotate(-90deg);
 		font-weight: bold;
-		font-size: 1.8em;
+		font-size: 1.75em;
 		letter-spacing: 0.1em;
 		position: absolute;
 		top: 50%;
 		left: 0;
-		margin-left: 15px;
+		margin-left: 17px;
+		min-width: 100px;
+		line-height: 0.55;
+		text-align: center;
+	}
+
+	.fc-axis .small {
+		font-size: 60%;
+		letter-spacing: normal;
 	}
 
 	.fc-content-skeleton {
@@ -87,7 +95,7 @@
 					type="button"
 					data-toggle="collapse"
 					data-target="#related-links">
-					<i class="fas fa-ellipsis-v"></i>
+					<i class="fa-solid fa-ellipsis-v"></i>
 				</button>
 			</div>
 			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100 d-print-none"
@@ -112,9 +120,11 @@
 	<div class="col">
 		<div class="calendar"
 			data-section-id="{{ $mealplanSection->id }}"
-			data-section-name="{{ $mealplanSection->name }}"
+			data-section-name="{{ $mealplanSection->name }}<br><span class='small text-muted'>{{ $mealplanSection->time_info }}</span>"
 			data-primary-section="{{ BoolToString($loop->first) }}"
-			{{-- $loop->last doesn't work however, is always null... --}}
+			{{--
+			$loop->last doesn't work however, is always null...
+			--}}
 			data-last-section="{{ BoolToString(array_values(array_slice($usedMealplanSections->fetchAll(), -1))[0]->id == $mealplanSection->id) }}">
 		</div>
 	</div>
@@ -141,12 +151,26 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 id="add-recipe-modal-title"
-					class="modal-title w-100"></h4>
+				<h4 class="modal-title w-100">
+					<span id="add-recipe-modal-title"></span>
+					<span class="text-muted float-right">{{ $__t('Recipe') }}</span>
+				</h4>
 			</div>
 			<div class="modal-body">
 				<form id="add-recipe-form"
 					novalidate>
+
+					@include('components.datetimepicker', array(
+					'id' => 'day',
+					'label' => 'Day',
+					'format' => 'YYYY-MM-DD',
+					'initWithNow' => false,
+					'limitEndToNow' => false,
+					'limitStartToNow' => false,
+					'isRequired' => true,
+					'additionalCssClasses' => 'date-only-datetimepicker',
+					'invalidFeedback' => $__t('A date is required')
+					))
 
 					@include('components.recipepicker', array(
 					'recipes' => $recipes,
@@ -190,7 +214,6 @@
 					class="btn btn-secondary"
 					data-dismiss="modal">{{ $__t('Cancel') }}</button>
 				<button id="save-add-recipe-button"
-					data-dismiss="modal"
 					class="btn btn-success">{{ $__t('Save') }}</button>
 			</div>
 		</div>
@@ -203,8 +226,10 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 id="add-note-modal-title"
-					class="modal-title w-100"></h4>
+				<h4 class="modal-title w-100">
+					<span id="add-note-modal-title"></span>
+					<span class="text-muted float-right">{{ $__t('Note') }}</span>
+				</h4>
 			</div>
 			<div class="modal-body">
 				<form id="add-note-form"
@@ -241,7 +266,6 @@
 					class="btn btn-secondary"
 					data-dismiss="modal">{{ $__t('Cancel') }}</button>
 				<button id="save-add-note-button"
-					data-dismiss="modal"
 					class="btn btn-success">{{ $__t('Save') }}</button>
 			</div>
 		</div>
@@ -254,8 +278,10 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 id="add-product-modal-title"
-					class="modal-title w-100"></h4>
+				<h4 class="modal-title w-100">
+					<span id="add-product-modal-title"></span>
+					<span class="text-muted float-right">{{ $__t('Product') }}</span>
+				</h4>
 			</div>
 			<div class="modal-body">
 				<form id="add-product-form"
@@ -294,7 +320,6 @@
 					class="btn btn-secondary"
 					data-dismiss="modal">{{ $__t('Cancel') }}</button>
 				<button id="save-add-product-button"
-					data-dismiss="modal"
 					class="btn btn-success">{{ $__t('Save') }}</button>
 			</div>
 		</div>
@@ -314,7 +339,7 @@
 				<form id="copy-day-form"
 					novalidate>
 
-					@include('components.datetimepicker', array(
+					@include('components.datetimepicker2', array(
 					'id' => 'copy_to_date',
 					'label' => 'Day',
 					'format' => 'YYYY-MM-DD',
@@ -322,7 +347,7 @@
 					'limitEndToNow' => false,
 					'limitStartToNow' => false,
 					'isRequired' => true,
-					'additionalCssClasses' => 'date-only-datetimepicker',
+					'additionalCssClasses' => 'date-only-datetimepicker2',
 					'invalidFeedback' => $__t('A date is required')
 					))
 
@@ -333,7 +358,6 @@
 					class="btn btn-secondary"
 					data-dismiss="modal">{{ $__t('Cancel') }}</button>
 				<button id="save-copy-day-button"
-					data-dismiss="modal"
 					class="btn btn-primary">{{ $__t('Copy') }}</button>
 			</div>
 		</div>

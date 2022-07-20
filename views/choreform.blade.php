@@ -66,11 +66,7 @@
 			</div>
 
 			<div class="form-group">
-				<label for="period_type">{{ $__t('Period type') }}&nbsp;<i id="chore-period-type-info"
-						class="fas fa-question-circle text-muted"
-						data-toggle="tooltip"
-						data-trigger="hover click"
-						title=""></i></label>
+				<label for="period_type">{{ $__t('Period type') }}</label>
 				<select required
 					class="custom-control custom-select input-group-chore-period-type"
 					id="period_type"
@@ -91,7 +87,7 @@
 			'value' => $value,
 			'min' => '0',
 			'additionalCssClasses' => 'input-group-chore-period-type',
-			'additionalGroupCssClasses' => 'period-type-input period-type-dynamic-regular period-type-monthly'
+			'additionalGroupCssClasses' => 'period-type-input period-type-monthly'
 			))
 
 			<div class="form-group period-type-input period-type-weekly">
@@ -165,17 +161,34 @@
 			'value' => $value,
 			'min' => '1',
 			'additionalCssClasses' => 'input-group-chore-period-type',
-			'additionalGroupCssClasses' => 'period-type-input period-type-daily period-type-weekly period-type-monthly period-type-yearly',
-			'hintId' => 'chore-period-interval-info'
+			'additionalGroupCssClasses' => 'period-type-input period-type-hourly period-type-daily period-type-weekly period-type-monthly period-type-yearly'
+			))
+
+			<p id="chore-schedule-info"
+				class="form-text text-info mt-n2"></p>
+
+			@php
+			$value = date('Y-m-d H:i:s');
+			if ($mode == 'edit')
+			{
+			$value = date('Y-m-d H:i:s', strtotime($chore->start_date));
+			}
+			@endphp
+			@include('components.datetimepicker', array(
+			'id' => 'start',
+			'label' => 'Start date',
+			'initialValue' => $value,
+			'format' => 'YYYY-MM-DD HH:mm:ss',
+			'initWithNow' => true,
+			'limitEndToNow' => false,
+			'limitStartToNow' => false,
+			'invalidFeedback' => $__t('A start date is required'),
+			'hint' => $__t('The start date cannot be changed when the chore was once tracked')
 			))
 
 			@if(GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS)
 			<div class="form-group">
-				<label for="assignment_type">{{ $__t('Assignment type') }} <i id="chore-assignment-type-info"
-						class="fas fa-question-circle text-muted"
-						data-toggle="tooltip"
-						data-trigger="hover click"
-						title=""></i></label>
+				<label for="assignment_type">{{ $__t('Assignment type') }}</label>
 				<select required
 					class="custom-control custom-select input-group-chore-assignment-type"
 					id="assignment_type"
@@ -206,6 +219,9 @@
 				</select>
 				<div class="invalid-feedback">{{ $__t('This assignment type requires that at least one is assigned') }}</div>
 			</div>
+
+			<p id="chore-assignment-type-info"
+				class="form-text text-info mt-n2"></p>
 			@else
 			<input type="hidden"
 				id="assignment_type"
@@ -224,7 +240,7 @@
 						$chore->track_date_only == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="track_date_only" name="track_date_only" value="1">
 					<label class="form-check-label custom-control-label"
 						for="track_date_only">{{ $__t('Track date only') }}
-						&nbsp;<i class="fas fa-question-circle text-muted"
+						&nbsp;<i class="fa-solid fa-question-circle text-muted"
 							data-toggle="tooltip"
 							data-trigger="hover click"
 							title="{{ $__t('When enabled only the day of an execution is tracked, not the time') }}"></i>
@@ -239,7 +255,7 @@
 						$chore->rollover == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="rollover" name="rollover" value="1">
 					<label class="form-check-label custom-control-label"
 						for="rollover">{{ $__t('Due date rollover') }}
-						&nbsp;<i class="fas fa-question-circle text-muted"
+						&nbsp;<i class="fa-solid fa-question-circle text-muted"
 							data-toggle="tooltip"
 							data-trigger="hover click"
 							title="{{ $__t('When enabled the chore can never be overdue, the due date will shift forward each day when due') }}"></i>
@@ -299,7 +315,7 @@
 				<div class="title-related-links pb-4">
 					<h4>
 						<span class="ls-n1">{{ $__t('grocycode') }}</span>
-						<i class="fas fa-question-circle text-muted"
+						<i class="fa-solid fa-question-circle text-muted"
 							data-toggle="tooltip"
 							data-trigger="hover click"
 							title="{{ $__t('grocycode is a unique referer to this %s in your grocy instance - print it onto a label and scan it like any other barcode', $__t('Chore')) }}"></i>

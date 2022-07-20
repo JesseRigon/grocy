@@ -98,14 +98,19 @@ $(".numberpicker.locale-number-input.locale-number-currency").on("blur", functio
 	if (BoolVal(Grocy.UserSettings.stock_auto_decimal_separator_prices))
 	{
 		var value = this.value.toString();
-		var decimalPlaces = parseInt(Grocy.UserSettings.stock_decimal_places_prices);
+		if (value == null || value.isEmpty() || value.includes(".") || value.includes(","))
+		{
+			return;
+		}
+
+		var decimalPlaces = parseInt(Grocy.UserSettings.stock_decimal_places_prices_input);
 
 		if (value.length <= decimalPlaces)
 		{
 			value = value.padStart(decimalPlaces, "0");
 		}
 
-		var valueNew = parseFloat(value.substring(0, value.length - decimalPlaces) + '.' + value.slice(decimalPlaces * -1)).toLocaleString(undefined, { minimumFractionDigits: decimalPlaces, maximumFractionDigits: decimalPlaces });
+		var valueNew = parseFloat(value.substring(0, value.length - decimalPlaces) + '.' + value.slice(decimalPlaces * -1));
 		$(this).val(valueNew);
 	}
 });

@@ -27,7 +27,7 @@
 		{{ $__t($label) }}
 		@if(!empty($hint) || !empty($hintId))
 		<i id="{{ $hintId }}"
-			class="fas fa-question-circle text-muted"
+			class="fa-solid fa-question-circle text-muted"
 			data-toggle="tooltip"
 			data-trigger="hover click"
 			title="{{ $hint }}"></i>
@@ -57,12 +57,13 @@
 			data-decimals="{{ $decimals }}"
 			@if($isRequired)
 			required
-			@endif>
+			@endif
+			autocomplete="off">
 		<div class="input-group-append">
-			<div class="input-group-text numberpicker-up-button"><i class="fas fa-arrow-up"></i></div>
+			<div class="input-group-text numberpicker-up-button"><i class="fa-solid fa-arrow-up"></i></div>
 		</div>
 		<div class="input-group-append">
-			<div class="input-group-text numberpicker-down-button"><i class="fas fa-arrow-down"></i></div>
+			<div class="input-group-text numberpicker-down-button"><i class="fa-solid fa-arrow-down"></i></div>
 		</div>
 		<div class="invalid-feedback">{{ $invalidFeedback }}</div>
 	</div>

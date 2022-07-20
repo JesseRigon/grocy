@@ -20,15 +20,12 @@ Grocy.Components.DateTimePicker.SetValue = function(value, inputElement = Grocy.
 		$("#datetimepicker-shortcut").click();
 	}
 	inputElement.val(value);
-	inputElement.trigger('change');
-
 	inputElement.keyup();
 }
 
 Grocy.Components.DateTimePicker.Clear = function()
 {
-	$(".datetimepicker").datetimepicker("destroy");
-	Grocy.Components.DateTimePicker.Init();
+	Grocy.Components.DateTimePicker.Init(true);
 
 	Grocy.Components.DateTimePicker.GetInputElement().val("");
 
@@ -76,15 +73,20 @@ if (Grocy.Components.DateTimePicker.GetInputElement().data('limit-end-to-now') =
 	limitDate = moment();
 }
 
-Grocy.Components.DateTimePicker.Init = function()
+Grocy.Components.DateTimePicker.Init = function(reInit = false)
 {
+	if (reInit)
+	{
+		$(".datetimepicker").datetimepicker("destroy");
+	}
+
 	$(".datetimepicker").each(function()
 	{
 		$(this).datetimepicker(
 			{
 				format: $(this).find("input").data('format'),
 				buttons: {
-					showToday: true,
+					showToday: Grocy.Components.DateTimePicker.GetInputElement().data('limit-end-to-now') !== true,
 					showClose: true
 				},
 				calendarWeeks: Grocy.CalendarShowWeekNumbers,
@@ -93,15 +95,15 @@ Grocy.Components.DateTimePicker.Init = function()
 				defaultDate: startDate,
 				useCurrent: false,
 				icons: {
-					time: 'far fa-clock',
-					date: 'far fa-calendar',
-					up: 'fas fa-arrow-up',
-					down: 'fas fa-arrow-down',
-					previous: 'fas fa-chevron-left',
-					next: 'fas fa-chevron-right',
-					today: 'fas fa-calendar-check',
-					clear: 'far fa-trash-alt',
-					close: 'far fa-times-circle'
+					time: 'fa-regular fa-clock',
+					date: 'fa-regular fa-calendar',
+					up: 'fa-solid fa-arrow-up',
+					down: 'fa-solid fa-arrow-down',
+					previous: 'fa-solid fa-chevron-left',
+					next: 'fa-solid fa-chevron-right',
+					today: 'fa-solid fa-calendar-day',
+					clear: 'fa-regular fa-trash-alt',
+					close: 'fa-solid fa-check'
 				},
 				sideBySide: true,
 				keyBinds: {
@@ -130,24 +132,25 @@ Grocy.Components.DateTimePicker.GetInputElement().on('keyup', function(e)
 
 	var inputElement = $(e.currentTarget)
 	var value = inputElement.val();
+	var lastCharacter = value.slice(-1).toLowerCase();
 	var now = new Date();
 	var centuryStart = Number.parseInt(now.getFullYear().toString().substring(0, 2) + '00');
 	var centuryEnd = Number.parseInt(now.getFullYear().toString().substring(0, 2) + '99');
 	var format = inputElement.data('format');
 	var nextInputElement = $(inputElement.data('next-input-selector'));
 
-	//If input is empty and any arrow key is pressed, set date to today
+	// If input is empty and any arrow key is pressed, set date to today
 	if (value.length === 0 && (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 37 || e.keyCode === 39))
 	{
 		Grocy.Components.DateTimePicker.SetValue(moment(new Date(), format, true).format(format), inputElement);
 		nextInputElement.focus();
 	}
-	else if (value === 'x' || value === 'X')
+	else if (value === 'x' || value === 'X') // Shorthand for never overdue
 	{
 		Grocy.Components.DateTimePicker.SetValue(moment('2999-12-31 23:59:59').format(format), inputElement);
 		nextInputElement.focus();
 	}
-	else if (value.length === 4 && !(Number.parseInt(value) > centuryStart && Number.parseInt(value) < centuryEnd))
+	else if (value.length === 4 && !(Number.parseInt(value) > centuryStart && Number.parseInt(value) < centuryEnd)) // Shorthand for MMDD
 	{
 		var date = moment((new Date()).getFullYear().toString() + value);
 		if (date.isBefore(moment()))
@@ -157,16 +160,37 @@ Grocy.Components.DateTimePicker.GetInputElement().on('keyup', function(e)
 		Grocy.Components.DateTimePicker.SetValue(date.format(format), inputElement);
 		nextInputElement.focus();
 	}
-	else if (value.length === 8 && $.isNumeric(value))
+	else if (value.length === 8 && $.isNumeric(value)) // Shorthand for YYYYMMDD
 	{
 		Grocy.Components.DateTimePicker.SetValue(value.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'), inputElement);
 		nextInputElement.focus();
 	}
-	else if (value.length === 7 && $.isNumeric(value.substring(0, 6)) && (value.substring(6, 7).toLowerCase() === "e" || value.substring(6, 7).toLowerCase() === "+"))
+	else if (value.length === 7 && $.isNumeric(value.substring(0, 6)) && (value.substring(6, 7).toLowerCase() === "e" || value.substring(6, 7).toLowerCase() === "+")) // Shorthand for YYYYMM[e/+]
 	{
 		var date = moment(value.substring(0, 4) + "-" + value.substring(4, 6) + "-01").endOf("month");
 		Grocy.Components.DateTimePicker.SetValue(date.format(format), inputElement);
 		nextInputElement.focus();
+	}
+	else if ((value.startsWith("+") || value.startsWith("-")) && (lastCharacter == "d" || lastCharacter == "m" || lastCharacter == "y")) // Shorthand for [+/-]n[d/m/y]
+	{
+		var n = parseInt(value.substring(1, value.length - 1));
+		if (value.startsWith("-"))
+		{
+			n = n * -1;
+		}
+
+		if (lastCharacter == "d")
+		{
+			Grocy.Components.DateTimePicker.SetValue(moment().add(n, "days").format(format));
+		}
+		else if (lastCharacter == "m")
+		{
+			Grocy.Components.DateTimePicker.SetValue(moment().add(n, "months").format(format));
+		}
+		else if (lastCharacter == "y")
+		{
+			Grocy.Components.DateTimePicker.SetValue(moment().add(n, "years").format(format));
+		}
 	}
 	else
 	{
@@ -217,6 +241,9 @@ Grocy.Components.DateTimePicker.GetInputElement().on('keyup', function(e)
 			}
 		}
 	}
+
+	$('#datetimepicker-timeago').attr("datetime", Grocy.Components.DateTimePicker.GetValue());
+	RefreshContextualTimeago(".datetimepicker-wrapper");
 
 	//Custom validation
 	value = Grocy.Components.DateTimePicker.GetValue();

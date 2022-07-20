@@ -94,7 +94,7 @@ $(".input-group-productamountpicker").on("change", function()
 	var quFactor = $("#qu_id option:selected").attr("data-qu-factor");
 	var amount = $("#display_amount").val();
 	var destinationAmount = amount / quFactor;
-	var destinationQuName = __n(destinationAmount, $("#qu_id").attr("data-destination-qu-name"), $("#qu_id").attr("data-destination-qu-name-plural"))
+	var destinationQuName = __n(destinationAmount, $("#qu_id").attr("data-destination-qu-name"), $("#qu_id").attr("data-destination-qu-name-plural"), true);
 
 	if ($("#qu_id").attr("data-destination-qu-name") == selectedQuName || Grocy.Components.ProductAmountPicker.AllowAnyQuEnabled || amount.toString().isEmpty() || selectedQuName.toString().isEmpty())
 	{
@@ -106,7 +106,13 @@ $(".input-group-productamountpicker").on("change", function()
 		$("#qu-conversion-info").text(__t("This equals %1$s %2$s", destinationAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }), destinationQuName));
 	}
 
-	$("#amount").val(destinationAmount.toFixed(Grocy.UserSettings.stock_decimal_places_amounts).replace(/0*$/g, ''));
+	var n = Number.parseInt(Grocy.UserSettings.stock_decimal_places_amounts);
+	if (n <= 0)
+	{
+		n = 1;
+	}
+
+	$("#amount").val(destinationAmount.toFixed(n).replace(/0*$/g, ''));
 });
 
 $("#display_amount").on("keyup", function()

@@ -51,7 +51,7 @@
 			<div class="form-group">
 				<label for="name">
 					{{ $__t('Name') }}
-					<i class="fas fa-question-circle text-muted"
+					<i class="fa-solid fa-question-circle text-muted"
 						data-toggle="tooltip"
 						data-trigger="hover click"
 						title="{{ $__t('This is the internal field name, e. g. for the API') }}"></i>
@@ -69,7 +69,7 @@
 			<div class="form-group">
 				<label for="name">
 					{{ $__t('Caption') }}
-					<i class="fas fa-question-circle text-muted"
+					<i class="fa-solid fa-question-circle text-muted"
 						data-toggle="tooltip"
 						data-trigger="hover click"
 						title="{{ $__t('This is used to display the field on the frontend') }}"></i>
@@ -118,6 +118,20 @@
 					name="config">@if($mode == 'edit'){{ $userfield->config }}@endif</textarea>
 			</div>
 
+			<div id="default-value-group"
+				class="form-group d-none userfield-type-date userfield-type-datetime">
+				<label for="entity">{{ $__t('Default value') }}</label>
+				<select class="custom-control custom-select"
+					id="default_value"
+					name="default_value">
+					<option></option>
+					<option value="now"
+						@if($mode=='edit'
+						&&
+						$userfield->default_value == 'now') selected="selected" @endif>{{ $__t('Now / today') }}</option>
+				</select>
+			</div>
+
 			<div class="form-group">
 				<div class="custom-control custom-checkbox">
 					<input @if($mode=='edit'
@@ -136,7 +150,7 @@
 					<label class="form-check-label custom-control-label"
 						for="input_required">
 						{{ $__t('Mandatory') }}
-						&nbsp;<i class="fas fa-question-circle text-muted"
+						&nbsp;<i class="fa-solid fa-question-circle text-muted"
 							data-toggle="tooltip"
 							data-trigger="hover click"
 							title="{{ $__t('When enabled, then this field must be filled on the destination form') }}"></i>

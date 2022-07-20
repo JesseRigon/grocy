@@ -5,7 +5,8 @@
 
 @section('content')
 <script>
-	Grocy.EditObjectId = {{ $stockEntry->id }};
+	Grocy.EditObjectId = "{{ $stockEntry->stock_id }}";
+	Grocy.EditObjectRowId = {{ $stockEntry->id }};
 	Grocy.EditObjectProductId = {{ $stockEntry->product_id }};
 </script>
 
@@ -25,6 +26,29 @@
 			@php
 			$product = FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id);
 			@endphp
+
+			@include('components.numberpicker', array(
+			'id' => 'amount',
+			'value' => $stockEntry->amount,
+			'min' => $DEFAULT_MIN_AMOUNT,
+			'decimals' => $userSettings['stock_decimal_places_amounts'],
+			'label' => 'Amount',
+			'contextInfoId' => 'amount_qu_unit',
+			'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
+			))
+
+			@include('components.datetimepicker2', array(
+			'id' => 'purchase_date',
+			'initialValue' => $stockEntry->purchased_date,
+			'label' => 'Purchased date',
+			'format' => 'YYYY-MM-DD',
+			'initWithNow' => false,
+			'limitEndToNow' => false,
+			'limitStartToNow' => false,
+			'invalidFeedback' => $__t('A purchased date is required'),
+			'nextInputSelector' => '#save-stockentry-button',
+			'additionalGroupCssClasses' => 'date-only-datetimepicker'
+			))
 
 			@php
 			$additionalGroupCssClasses = '';
@@ -53,16 +77,6 @@
 			))
 			@php $additionalGroupCssClasses = ''; @endphp
 
-			@include('components.numberpicker', array(
-			'id' => 'amount',
-			'value' => $stockEntry->amount,
-			'min' => $DEFAULT_MIN_AMOUNT,
-			'decimals' => $userSettings['stock_decimal_places_amounts'],
-			'label' => 'Amount',
-			'contextInfoId' => 'amount_qu_unit',
-			'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
-			))
-
 			@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)
 			@php
 			if (empty($stockEntry->price))
@@ -78,8 +92,8 @@
 			'id' => 'price',
 			'value' => $price,
 			'label' => 'Price',
-			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_prices']),
-			'decimals' => $userSettings['stock_decimal_places_prices'],
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_prices_input']),
+			'decimals' => $userSettings['stock_decimal_places_prices_input'],
 			'hint' => $__t('Per stock quantity unit'),
 			'isRequired' => false,
 			'additionalCssClasses' => 'locale-number-input locale-number-currency'
@@ -108,18 +122,16 @@
 				value="1">
 			@endif
 
-			@include('components.datetimepicker2', array(
-			'id' => 'purchase_date',
-			'initialValue' => $stockEntry->purchased_date,
-			'label' => 'Purchased date',
-			'format' => 'YYYY-MM-DD',
-			'initWithNow' => false,
-			'limitEndToNow' => false,
-			'limitStartToNow' => false,
-			'invalidFeedback' => $__t('A purchased date is required'),
-			'nextInputSelector' => '#save-stockentry-button',
-			'additionalGroupCssClasses' => 'date-only-datetimepicker'
-			))
+			<div class="form-group">
+				<label for="note">{{ $__t('Note') }}</label>
+				<div class="input-group">
+					<input type="text"
+						class="form-control"
+						id="note"
+						name="note"
+						value="{{ $stockEntry->note }}">
+				</div>
+			</div>
 
 			<div class="form-group">
 				<div class="custom-control custom-checkbox">
@@ -128,6 +140,11 @@
 						for="open">{{ $__t('Opened') }}</label>
 				</div>
 			</div>
+
+			@include('components.userfieldsform', array(
+			'userfields' => $userfields,
+			'entity' => 'stock'
+			))
 
 			<button id="save-stockentry-button"
 				class="btn btn-success">{{ $__t('OK') }}</button>

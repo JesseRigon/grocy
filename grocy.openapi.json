@@ -1911,6 +1911,10 @@
 									"stock_label_type": {
 										"type": "integer",
 										"description": "`1` = No label, `2` = Single label, `3` = Label per unit"
+									},
+									"note": {
+										"type": "string",
+										"description": "An optional note for the corresponding stock entry"
 									}
 								},
 								"example": {
@@ -2003,7 +2007,7 @@
 									},
 									"allow_subproduct_substitution": {
 										"type": "boolean",
-										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
+										"description": "`true` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -2167,6 +2171,10 @@
 									"stock_label_type": {
 										"type": "integer",
 										"description": "`1` = No label, `2` = Single label, `3` = Label per unit (only applies to added products)"
+									},
+									"note": {
+										"type": "string",
+										"description": "An optional note for the corresponding stock entry (only applies to added products)"
 									}
 								}
 							}
@@ -2234,7 +2242,7 @@
 									},
 									"allow_subproduct_substitution": {
 										"type": "boolean",
-										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
+										"description": "`true` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -2532,7 +2540,7 @@
 									},
 									"allow_subproduct_substitution": {
 										"type": "boolean",
-										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
+										"description": "`rue` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -2755,7 +2763,7 @@
 									},
 									"allow_subproduct_substitution": {
 										"type": "boolean",
-										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
+										"description": "`rue` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -2785,6 +2793,72 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/stock/locations/{locationId}/entries": {
+			"get": {
+				"summary": "Returns all stock entries of the given location",
+				"tags": [
+					"Stock"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "locationId",
+						"required": true,
+						"description": "A valid location id",
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "An array of StockEntry objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockEntry"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The operation was not successful (possible errors are: Not existing location)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -3388,6 +3462,16 @@
 				"responses": {
 					"204": {
 						"description": "The operation was successful"
+					},
+					"400": {
+						"description": "The operation was not successful (possible errors are: Invalid recipe id, recipe need is not fulfilled)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
 					}
 				}
 			}
@@ -3485,6 +3569,48 @@
 					},
 					"400": {
 						"description": "The operation was not successful (possible errors are: Invalid recipe id)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/recipes/{recipeId}/printlabel": {
+			"get": {
+				"summary": "Prints the grocycode label of the given recipe on the configured label printer",
+				"tags": [
+					"Recipes"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "recipeId",
+						"required": true,
+						"description": "A valid recipe id",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "The operation was successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"description": "WebHook data"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The operation was not successful (possible errors are: Not existing recipe, error on WebHook execution)",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -3616,6 +3742,11 @@
 									"done_by": {
 										"type": "integer",
 										"description": "A valid user id of who executed this chore, when omitted, the currently authenticated user will be used"
+									},
+									"skipped": {
+										"type": "boolean",
+										"default": false,
+										"description": "`true` when the execution should be tracked as skipped, defaults to `false` when omitted"
 									}
 								}
 							}
@@ -4341,9 +4472,24 @@
 					"shopping_location_id": {
 						"type": "integer"
 					},
+					"treat_opened_as_out_of_stock": {
+						"type": "integer"
+					},
+					"no_own_stock": {
+						"type": "integer"
+					},
 					"userfields": {
 						"type": "object",
 						"description": "Key/value pairs of userfields"
+					},
+					"should_not_be_frozen": {
+						"type": "integer"
+					},
+					"default_consume_location_id": {
+						"type": "integer"
+					},
+					"move_on_open": {
+						"type": "integer"
 					}
 				},
 				"example": {
@@ -4365,7 +4511,10 @@
 					"tare_weight": "0.0",
 					"not_check_stock_fulfillment_for_recipes": "0",
 					"shopping_location_id": null,
-					"userfields": null
+					"userfields": null,
+					"should_not_be_frozen": "1",
+					"default_consume_location_id": "5",
+					"move_on_open": "1"
 				}
 			},
 			"QuantityUnit": {
@@ -4533,6 +4682,9 @@
 						"type": "string",
 						"format": "date"
 					},
+					"note": {
+						"type": "string"
+					},
 					"row_created_timestamp": {
 						"type": "string",
 						"format": "date-time"
@@ -4614,13 +4766,21 @@
 						"format": "date-time"
 					},
 					"last_price": {
-						"type": "number"
+						"type": "number",
+						"description": "The price of the last purchase of the corresponding product"
 					},
 					"avg_price": {
-						"type": "number"
+						"type": "number",
+						"description": "The average price af all stock entries currently in stock of the corresponding product"
+					},
+					"current_price": {
+						"type": "number",
+						"description": "The current price of the corresponding product, based on the stock entry to use next (defined by the default consume rule \"Opened first, then first due first, then first in first out\") or on the last price if the product is currently not in stock"
 					},
 					"oldest_price": {
-						"type": "number"
+						"type": "number",
+						"description": "This field is deprecated and will be removed in a future version (currently returns the same as `current_price`)",
+						"deprecated": true
 					},
 					"last_shopping_location_id": {
 						"type": "integer"
@@ -4636,7 +4796,10 @@
 					},
 					"has_childs": {
 						"type": "boolean",
-						"description": "True when the product is a parent products of others"
+						"description": "True when the product is a parent product of others"
+					},
+					"default_location": {
+						"$ref": "#/components/schemas/Location"
 					}
 				},
 				"example": {
@@ -4692,7 +4855,7 @@
 					},
 					"last_price": null,
 					"avg_price": null,
-					"oldest_price": null,
+					"current_price": null,
 					"last_shopping_location_id": null,
 					"next_due_date": "2019-07-07",
 					"location": {
@@ -4702,7 +4865,8 @@
 						"row_created_timestamp": "2019-05-02 20:12:25"
 					},
 					"average_shelf_life_days": -1,
-					"spoil_rate_percent": 0
+					"spoil_rate_percent": 0,
+					"default_consume_location": null
 				}
 			},
 			"ProductPriceHistory": {
@@ -4798,6 +4962,10 @@
 					},
 					"next_execution_assigned_user": {
 						"$ref": "#/components/schemas/UserDto"
+					},
+					"average_execution_frequency_hours": {
+						"type": "integer",
+						"description": "Contains the average past execution frequency in hours or `null`, when the chore was never executed before"
 					}
 				},
 				"example": {
@@ -5053,7 +5221,7 @@
 						"type": "string",
 						"enum": [
 							"manually",
-							"dynamic-regular",
+							"hourly",
 							"daily",
 							"weekly",
 							"monthly"
@@ -5084,6 +5252,17 @@
 						"type": "string"
 					},
 					"next_execution_assigned_to_user_id": {
+						"type": "integer"
+					},
+					"start_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"rescheduled_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"rescheduled_next_execution_assigned_to_user_id": {
 						"type": "integer"
 					},
 					"row_created_timestamp": {
@@ -5151,6 +5330,9 @@
 					},
 					"transaction_type": {
 						"$ref": "#/components/schemas/StockTransactionType"
+					},
+					"note": {
+						"type": "string"
 					},
 					"row_created_timestamp": {
 						"type": "string",
@@ -5352,6 +5534,12 @@
 					},
 					"next_execution_assigned_to_user_id": {
 						"type": "integer"
+					},
+					"is_rescheduled": {
+						"type": "boolean"
+					},
+					"is_reassigned": {
+						"type": "boolean"
 					},
 					"next_execution_assigned_user": {
 						"$ref": "#/components/schemas/UserDto"

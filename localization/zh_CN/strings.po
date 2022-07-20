@@ -3,7 +3,7 @@
 # a a <akv40402@zzrgg.com>, 2020
 # 文春鹏 <wcp1231@gmail.com>, 2020
 # milkfish <i@mxd.moe>, 2020
-# ba X <985096998@qq.com>, 2021
+# ba X <985096998@qq.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-01T17:59:17+00:00\n"
 "PO-Revision-Date: 2019-05-01 17:42+0000\n"
-"Last-Translator: ba X <985096998@qq.com>, 2021\n"
+"Last-Translator: ba X <985096998@qq.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/grocy/teams/93189/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -252,9 +252,6 @@ msgstr "修改地址"
 msgid "Edit store"
 msgstr "修改商店"
 
-msgid "Record data"
-msgstr "记录数据"
-
 msgid "Manage master data"
 msgstr "管理主数据"
 
@@ -328,7 +325,7 @@ msgid "Manage API keys"
 msgstr "管理API 秘钥"
 
 msgid "REST API browser"
-msgstr ""
+msgstr "‎REST API 浏览器‎"
 
 msgid "API keys"
 msgstr "API 秘钥"
@@ -353,11 +350,6 @@ msgstr "这意味着%s将被添加到库存中"
 
 msgid "This means %s will be removed from stock"
 msgstr "这意味着%s将从库存中删除"
-
-msgid ""
-"This means the next execution of this chore is scheduled %s days after the "
-"last execution"
-msgstr "这意味着这个家务的下次执行被安排在上一次执行后的%s天"
 
 msgid "Removed %1$s of %2$s from stock"
 msgstr "从库存的%2$s中删除%1$s"
@@ -700,12 +692,6 @@ msgstr "状态"
 msgid "Below min. stock amount"
 msgstr "少于库存最低阈值"
 
-msgid "Expiring soon"
-msgstr "即将过期"
-
-msgid "Already expired"
-msgstr "已经过期"
-
 msgid "Due soon"
 msgstr "即将到期"
 
@@ -717,9 +703,6 @@ msgstr "视图设置"
 
 msgid "Auto reload on external changes"
 msgstr "自动重新加载外部更改"
-
-msgid "Enable night mode"
-msgstr "开启夜间模式"
 
 msgid "Auto enable in time range"
 msgstr "在时间范围内自动启用"
@@ -845,9 +828,9 @@ msgid "Use a specific stock item"
 msgstr "使用特定的库存项目"
 
 msgid ""
-"The first item in this list would be picked by the default rule which is "
-"\"Opened first, then first due first, then first in first out\""
-msgstr "列表中的第一项将按照默认规则进行选择，即“先打开，然后先到期，然后先进先出”"
+"The first item in this list would be picked by the default rule consume rule"
+" (Opened first, then first due first, then first in first out)"
+msgstr "‎此列表中的第一个项目将由默认规则消费规则选取（先打开，然后先到期，然后先进先出）‎"
 
 msgid "Mark %1$s of %2$s as open"
 msgstr "标记  %2$s 中的%1$s为拆封"
@@ -897,9 +880,6 @@ msgstr "份量"
 msgid "Costs"
 msgstr "费用"
 
-msgid "Based on the prices of the last purchase per product"
-msgstr "基于上一次购买每个产品的价格"
-
 msgid "The ingredients listed here result in this amount of servings"
 msgstr "这里列出的成分导致份量如此"
 
@@ -936,9 +916,6 @@ msgid ""
 "Use the following (public) URL to share or integrate the calendar in iCal "
 "format"
 msgstr "使用以下(公共)URL以iCal格式共享或集成日历"
-
-msgid "Allow partial units in stock"
-msgstr "允许部分库存"
 
 msgid "Enable tare weight handling"
 msgstr "启用皮重处理"
@@ -1126,9 +1103,6 @@ msgstr "库存不足，但已在购物清单中"
 msgid "Not enough in stock"
 msgstr "库存不足"
 
-msgid "Expiring soon days"
-msgstr "即将过期"
-
 msgid "Default location"
 msgstr "默认位置"
 
@@ -1157,9 +1131,6 @@ msgstr "消费%2$s中的%1$s"
 
 msgid "Meal plan"
 msgstr "膳食计划"
-
-msgid "Add recipe on %s"
-msgstr "在%s上添加食谱"
 
 msgid "%s serving"
 msgid_plural "%s servings"
@@ -1289,22 +1260,39 @@ msgid "Assignment type"
 msgstr "分配类型"
 
 msgid ""
-"This means the next execution of this chore is scheduled 1 day after the "
-"last execution"
-msgstr "这意味着该差事的下一次执行安排在上次执行之后的1天"
+"This means the next execution of this chore is scheduled at the same time "
+"(based on the start date) every day"
+msgid_plural ""
+"This means the next execution of this chore is scheduled at the same time "
+"(based on the start date) every %s days"
+msgstr[0] "‎这意味着下一次执行此杂务将安排在同一时间（基于开始日期）每次‎%s‎日‎"
 
 msgid ""
-"This means the next execution of this chore is scheduled 1 day after the "
-"last execution, but only for the weekdays selected below"
-msgstr "这意味着此差事的下一次执行安排在最后一次执行之后的1天，但仅针对下面选择的工作日"
+"This means the next execution of this chore is scheduled %s hour after the "
+"last execution"
+msgid_plural ""
+"This means the next execution of this chore is scheduled %s hours after the "
+"last execution"
+msgstr[0] "这意味着这个杂务的下一次执行是在上次执行后%s小时安排的  "
+
+msgid ""
+"This means the next execution of this chore is scheduled every week on the "
+"selected weekdays"
+msgid_plural ""
+"This means the next execution of this chore is scheduled every %s weeks on "
+"the selected weekdays"
+msgstr[0] "这意味着该任务的下一次执行是每%s周在选定的工作日中安排的  "
+
+msgid ""
+"This means the next execution of this chore is scheduled on the selected day"
+" every month"
+msgid_plural ""
+"This means the next execution of this chore is scheduled on the selected day"
+" every %s months"
+msgstr[0] "这意味着该任务的下一次执行将安排在每%s个月的某一天  "
 
 msgid "This means the next execution of this chore is not scheduled"
 msgstr "这意味着没有计划此差事的下一次执行"
-
-msgid ""
-"This means the next execution of this chore is scheduled on the below "
-"selected day of each month"
-msgstr "这意味着此任务的下一次执行安排在每月的以下选定日期"
 
 msgid ""
 "This means the next execution of this chore will not be assigned to anyone"
@@ -1451,7 +1439,7 @@ msgstr "累积子产品的最小库存数量"
 msgid ""
 "If enabled, the min. stock amount of sub products will be accumulated into "
 "this product, means the sub product will never be missing, only this product"
-msgstr ""
+msgstr "如果启用，子产品的最小库存量将累积到此产品，意味着子产品将永远不会丢失，只有此产品  "
 
 msgid "Are you sure to remove this conversion?"
 msgstr "您确定要删除此转换吗?"
@@ -1478,29 +1466,12 @@ msgid "Period interval"
 msgstr "时间间隔"
 
 msgid ""
-"This means the next execution of this chore should only be scheduled every "
-"%s days"
-msgstr "这意味着该家务的下一次执行应该每%s天安排一次"
-
-msgid ""
-"This means the next execution of this chore should only be scheduled every "
-"%s weeks"
-msgstr "这意味着该家务的下一次执行应该只安排每%s个星期执行一次"
-
-msgid ""
-"This means the next execution of this chore should only be scheduled every "
-"%s months"
-msgstr "这意味着该家务的下一次执行应该每%s个月安排一次"
-
-msgid ""
-"This means the next execution of this chore is scheduled 1 year after the "
-"last execution"
-msgstr "这意味着该差事的下一次执行安排在上次执行之后的1年"
-
-msgid ""
-"This means the next execution of this chore should only be scheduled every "
-"%s years"
-msgstr "这意味着该家务的下一次执行应该每%s年计划一次"
+"This means the next execution of this chore is scheduled every year on the "
+"same day (based on the start date)"
+msgid_plural ""
+"This means the next execution of this chore is scheduled every %s years on "
+"the same day (based on the start date)"
+msgstr[0] "这意味着该任务的下一次执行将安排在每%s年的同一天(基于开始日期)  "
 
 msgid "Transfer"
 msgstr "迁移"
@@ -1575,9 +1546,6 @@ msgstr "您确定要删除API密钥\"%s\"吗?"
 msgid "Add note"
 msgstr "添加笔记"
 
-msgid "Add note on %s"
-msgstr "在%s添加注释"
-
 msgid "per day"
 msgstr "每天"
 
@@ -1586,9 +1554,6 @@ msgstr "仅未完成的项目"
 
 msgid "Add product"
 msgstr "添加产品"
-
-msgid "Add product on %s"
-msgstr "在%s添加产品"
 
 msgid "Consume all ingredients needed by this weeks recipes or products"
 msgstr "食用本星期食谱或产品所需的所有原料"
@@ -1618,11 +1583,6 @@ msgstr "扫描模式已启用，但并非所有必填字段都可以自动填充
 msgid "Is freezer"
 msgstr "冷冻机"
 
-msgid ""
-"When moving products from/to a freezer location, the products best before "
-"date is automatically adjusted according to the product settings"
-msgstr "将产品移入/移出冰柜位置时，会根据产品设置自动调整产品的保质期"
-
 msgid "This cannot be the same as the \"From\" location"
 msgstr "这不能与“From”位置相同"
 
@@ -1640,15 +1600,6 @@ msgstr "购物清单设置"
 
 msgid "Show a month-view calendar"
 msgstr "显示一个月视图日历"
-
-msgid "Edit note on %s"
-msgstr "编辑关于%s的注释"
-
-msgid "Edit product on %s"
-msgstr "在%s编辑产品"
-
-msgid "Edit recipe on %s"
-msgstr "编辑食谱%s"
 
 msgid "Desired servings"
 msgstr "所需份量"
@@ -1701,9 +1652,6 @@ msgstr "卡路里"
 msgid "means %1$s per %2$s"
 msgstr "每%2$s，%1$s财产"
 
-msgid "Create inverse QU conversion"
-msgstr "单位转换"
-
 msgid "Create recipe"
 msgstr "创建配方"
 
@@ -1740,21 +1688,11 @@ msgstr "产品条形码"
 msgid "Edit Barcode"
 msgstr "编辑条形码"
 
-msgid "Not enough in stock (not included in costs), %s ingredient missing"
-msgstr "库存不足(不计入成本)，%s成分缺失"
-
 msgid ""
-"Based on the prices of the default consume rule which is \"Opened first, "
-"then first due first, then first in first out\""
-msgstr "基于默认消费规则的价格，即“先打开，然后先到期，然后先进先出”"
-
-msgid ""
-"Not enough in stock (not included in costs), %1$s missing, %2$s already on "
-"shopping list"
-msgstr "库存不足(不计入成本)，%1$s缺失，%2$s已在购物清单上"
-
-msgid "Quantity unit stock cannot be changed after first purchase"
-msgstr "首次购买后不能更改数量单位库存"
+"Based on the prices of the default consume rule (Opened first, then first "
+"due first, then first in first out) for in-stock ingredients and on the last"
+" price for missing ones"
+msgstr "根据库存原料的默认消费规则(先开、先到期、先进先出)的价格，缺货原料的最后价格  "
 
 msgid "Clear filter"
 msgstr "清除过滤器"
@@ -1819,9 +1757,6 @@ msgstr "库存总结"
 msgid "Journal summary"
 msgstr "总结"
 
-msgid "Journal summary for this product"
-msgstr "本产品的日志摘要"
-
 msgid "Consume exact amount"
 msgstr "消费确切数额"
 
@@ -1841,12 +1776,6 @@ msgstr "通用"
 
 msgid "Decimal places allowed for amounts"
 msgstr "允许小数点后位-数量"
-
-msgid "Decimal places allowed for prices"
-msgstr "允许小数点后位-价格"
-
-msgid "Stock entries for this product"
-msgstr "此产品的库存条目"
 
 msgid "Edit shopping list"
 msgstr "编辑购物清单"
@@ -1983,7 +1912,7 @@ msgid ""
 "When this product was marked as opened, the due date will be replaced by "
 "today + this amount of days, but only if the resulting date is not after the"
 " original due date (a value of 0 disables this)"
-msgstr ""
+msgstr "当该产品被标记为打开时，到期日将被替换为今天+此天数，但只有当结果日期不在原始到期日之后(值为0时禁用此功能)  "
 
 msgid "Default due days after opened"
 msgstr "开封后默认到期日"
@@ -2151,15 +2080,15 @@ msgid "Product to remove"
 msgstr "要删除的产品"
 
 msgid "Error while merging"
-msgstr ""
+msgstr "合并时发生错误"
 
 msgid "After merging, this product will be kept"
 msgstr "合并后，此产品将保留"
 
 msgid ""
-"After merging, all occurences of this product will be replaced by \"Product "
-"to keep\" (means this product will not exist anymore)"
-msgstr "合并后，此产品的所有出现都将被“要保留的产品”代替（意味着该产品将不再存在）"
+"After merging, all occurences of this product will be replaced by the kept "
+"product (means this product will not exist anymore)"
+msgstr "合并后，该产品出现的所有情况将由保留的产品替代(即该产品不再存在)  "
 
 msgid "Merge"
 msgstr "合并"
@@ -2190,12 +2119,12 @@ msgstr "下载"
 
 # Example: Download *Product* grocycode
 msgid "Download %s grocycode"
-msgstr ""
+msgstr "下载%sgrocycode"
 
 msgid ""
 "grocycode is a unique referer to this %s in your grocy instance - print it "
 "onto a label and scan it like any other barcode"
-msgstr ""
+msgstr "Grocycode是在你的grocy实例中对这个%s的唯一引用——将它打印到标签上，并像其他条码一样扫描它  "
 
 # Abbreviation for "due date"
 msgid "DD"
@@ -2205,7 +2134,7 @@ msgid "Print on label printer"
 msgstr "标签打印机打印"
 
 msgid "Default stock entry label"
-msgstr ""
+msgstr "‎默认‎‎库存‎‎输入标签‎"
 
 msgid "Stock entry label"
 msgstr "库存条目标签"
@@ -2224,10 +2153,10 @@ msgstr "执行WebHook时出错"
 
 # Example: Print *Product* grocycode on label printer
 msgid "Print %s grocycode on label printer"
-msgstr ""
+msgstr "在标签打印机上打印%sgrocycode"
 
 msgid "Open stock entry label in new window"
-msgstr ""
+msgstr "‎在新窗口中打开‎‎股票库存输入标签‎"
 
 msgid "Thermal printer"
 msgstr "热感打印机"
@@ -2242,134 +2171,293 @@ msgid "Unable to print"
 msgstr "无法打印"
 
 msgid "Only done items"
-msgstr ""
+msgstr "‎仅完成项目‎"
 
 msgid "Show only in-stock products"
-msgstr ""
+msgstr "‎仅显示有现货的产品‎"
 
 msgid "Product description"
-msgstr ""
+msgstr "产品描述"
 
 # Example: *3.21 USD* per *Pack*
 msgid "%1$s per %2$s"
-msgstr ""
+msgstr "%1$s每%2$s"
 
 msgid "Mark this item as undone"
-msgstr ""
+msgstr "‎将此项目标记为未完成‎"
 
 msgid "Mandatory"
-msgstr ""
+msgstr "强制的"
 
 msgid "Mandatory Userfield"
-msgstr ""
+msgstr "‎必填用户字段‎"
 
 msgid "When enabled, then this field must be filled on the destination form"
-msgstr ""
+msgstr "‎启用后，必须在目标表单上填写此字段‎"
 
 msgid "In-stock products"
-msgstr ""
+msgstr "‎现货产品‎"
 
 msgid "Timestamp"
-msgstr ""
+msgstr "‎时间戳‎"
 
 msgid "Should not be frozen"
-msgstr ""
+msgstr "‎不应冷冻‎"
 
 msgid ""
 "When enabled, on moving this product to a freezer location (so when freezing"
 " it), a warning will be shown"
-msgstr ""
+msgstr "‎启用后，将本‎‎产品‎‎移至冷冻室位置（冷冻时），将显示警告‎"
 
 msgid "This product shouldn't be frozen"
-msgstr ""
+msgstr "‎本‎‎产品‎‎不应冷冻‎"
 
 msgid "Copy all meal plan entries of %s"
-msgstr ""
+msgstr "复制所有%s的膳食计划"
 
 msgid "A date is required"
-msgstr ""
+msgstr "需要一个日期"
 
 msgid "Day"
-msgstr ""
+msgstr "日"
 
 msgid "Add recipe"
-msgstr ""
+msgstr "添加食谱"
 
 msgid "Copy this day"
-msgstr ""
+msgstr "复制这一天"
 
 msgid "Date range"
-msgstr ""
+msgstr "日期范围"
 
 msgid "%s month"
 msgid_plural "%s months"
-msgstr[0] ""
+msgstr[0] "%s月"
 
 msgid "%s year"
 msgid_plural "%s years"
-msgstr[0] ""
+msgstr[0] "%s年"
 
 msgid "Display product"
-msgstr ""
+msgstr "显示产品"
 
 msgid "Copy recipe"
-msgstr ""
+msgstr "复制食谱"
 
 msgid "Copy of %s"
-msgstr ""
+msgstr "复制%s"
 
 msgid "Add decimal separator automatically for price inputs"
-msgstr ""
+msgstr "为价格输入自动添加十进制分隔符  "
 
 msgid ""
 "When enabled, you always have to enter the value including decimal places, "
 "the decimal separator will be automatically added based on the amount of "
 "allowed decimal places"
-msgstr ""
+msgstr "启用时，您总是必须输入包括小数位数在内的值，小数分隔符将根据允许的小数位数数量自动添加 "
 
 msgid "Stock entry"
-msgstr ""
+msgstr "‎库存‎‎输入‎"
 
 msgid "Configure sections"
-msgstr ""
+msgstr "‎配置部件"
 
 msgid "Meal plan sections"
-msgstr ""
+msgstr "‎膳食计划部件"
 
 msgid "Create meal plan section"
-msgstr ""
+msgstr "‎创建膳食计划部件"
 
 msgid "Sections will be ordered by that number on the meal plan"
-msgstr ""
+msgstr "‎各部件将按膳食计划中的该数字订购‎"
 
 msgid "Edit meal plan section"
-msgstr ""
+msgstr "编辑膳食计划部分"
 
 msgid "Are you sure to delete meal plan section \"%s\"?"
-msgstr ""
+msgstr "你确定要删除膳食计划\"%s\"吗?"
 
 msgid "Section"
-msgstr ""
+msgstr "‎部件"
 
 msgid "Are you sure to empty the shopping list?"
-msgstr ""
+msgstr "‎是否确实要清空购物清单？‎"
 
 msgid "This is the default which will be prefilled on purchase"
-msgstr ""
+msgstr "‎这是默认设置，将在购买时预填充‎"
 
 msgid "Merge chores"
-msgstr ""
+msgstr "合并家务"
 
 msgid "Chore to keep"
-msgstr ""
+msgstr "要保留的家务‎"
 
 msgid "After merging, this chore will be kept"
-msgstr ""
+msgstr "合并之后，这个家务将被保留"
 
 msgid "Chore to remove"
-msgstr ""
+msgstr "删除任务"
 
 msgid ""
 "After merging, all occurences of this chore will be replaced by the kept "
 "chore (means this chore will not exist anymore)"
+msgstr "合并后，所有出现的这个家务将被保留的杂务取代(意味着这个家务将不再存在)  "
+
+msgid "Due today"
+msgstr "今天到期"
+
+msgid "%s task is due to be done today"
+msgid_plural "%s tasks are due to be done today"
+msgstr[0] "%s任务应该在今天完成"
+
+msgid "%s chore is due to be done today"
+msgid_plural "%s chores are due to be done today"
+msgstr[0] "%s家务今天该做了"
+
+msgid "%s battery is due to be charged today"
+msgid_plural "%s batteries are due to be charged today"
+msgstr[0] "%s电池今天应该充电"
+
+msgid "Set to 0 to hide due soon filters/highlighting"
+msgstr "设置为 0 可隐藏即将到期的筛选器/突出显示"
+
+msgid "Save & close"
+msgstr "保存并关闭"
+
+msgid "Save & add another task"
+msgstr "保存并添加另一个任务"
+
+msgid "Treat opened as out of stock"
+msgstr "一开封即扣除库存"
+
+msgid ""
+"When enabled, opened items will be counted as missing for calculating if "
+"this product is below its minimum stock amount"
+msgstr "当启用时，如果该产品低于其最小库存数量，则打开的项目将被视为缺失，用于计算 "
+
+msgid "Skipped"
+msgstr "跳过"
+
+msgid "Skip next chore schedule"
+msgstr "跳过下一个任务安排"
+
+msgid "Time"
+msgstr "时间"
+
+msgid "A start date is required"
+msgstr "需要一个开始日期"
+
+msgid "Start date"
+msgstr "开始日期"
+
+msgid "The start date cannot be changed when the chore was once tracked"
+msgstr "一旦跟踪了家务，就不能更改开始日期  "
+
+msgid "Show the recipe list and the recipe side by side"
+msgstr "并排显示食谱列表和食谱  "
+
+msgid ""
+"This means the next execution of this chore is scheduled dynamically based "
+"on the past average execution frequency"
+msgstr "这意味着这个家务的下一次执行是根据过去的平均执行频率动态调度的  "
+
+msgid "Average execution frequency"
+msgstr "平均执行频率"
+
+msgid "Reschedule next execution"
+msgstr "安排下一个执行"
+
+msgid "This can only be in the future"
+msgstr "这只能在未来发生"
+
+msgid "Rescheduled"
+msgstr "重新安排"
+
+msgid "Due score"
+msgstr "‎到期分数‎"
+
+msgid ""
+"The higher this number is, the more ingredients currently in stock are due "
+"soon, overdue or already expired"
+msgstr "这个数字越高，说明库存中即将到期、过期或已经过期的成分越多  "
+
+msgid "Disable own stock"
+msgstr "禁用的库存"
+
+msgid ""
+"When enabled, this product can't have own stock, means it will not be "
+"selectable on purchase (useful for parent products which are just used as a "
+"summary/total view of the child products)"
+msgstr "当启用时，该产品不能有自己的库存，意味着在购买时它将不可选(适用于父产品，仅用作子产品的汇总/总体视图)  "
+
+msgid "Out of stock items will be shown at the products default location"
+msgstr "无库存项目将显示在产品默认位置  "
+
+msgid "Show a little checkbox next to each ingredient to mark it as done"
+msgstr "在每个原料旁边显示一个小复选框，以标记它已经完成 "
+
+msgid ""
+"The ingredient is crossed out when clicked, the status is not saved, means "
+"reset when the page is reloaded"
+msgstr "当单击时，配料被划掉，状态不保存，意味着页面重新加载时重置  "
+
+msgid ""
+"The parent product %1$s is currently not in stock, %2$s is the current next "
+"sub product based on the default consume rule (Opened first, then first due "
+"first, then first in first out)"
+msgstr "父产品%1$s目前不在库存中，%2$s是基于默认消费规则的当前下一个子产品(先打开，然后先到期，然后先进先出)  "
+
+msgid "Night mode"
+msgstr "黑暗模式"
+
+msgid "On"
+msgstr "打开"
+
+msgid "Use system setting"
+msgstr "使用系统设置"
+
+msgid "Off"
+msgstr "关闭"
+
+msgid ""
+"Automatically add products that are below their defined min. stock amount to"
+" the shopping list"
+msgstr "自动将低于其定义的最小库存数量的产品添加到购物清单中  "
+
+msgid "Reassigned"
+msgstr "重新分配"
+
+msgid "Default value"
+msgstr "默认值"
+
+msgid "Now / today"
+msgstr "现在/今天"
+
+msgid "Add meal plan entry"
+msgstr "添加膳食计划条目"
+
+msgid "Edit meal plan entry"
+msgstr "编辑膳食计划条目"
+
+msgid "Default consume location"
+msgstr "默认使用位置"
+
+msgid "Stock entries at this location will be consumed first"
+msgstr "这个位置的库存条目将首先被消费  "
+
+msgid "Move on open"
+msgstr "继续开放"
+
+msgid ""
+"When enabled, on marking this product as opened, the corresponding amount "
+"will be moved to the default consume location"
+msgstr "‎启用后，在将此‎‎产品‎‎标记为已打开时，相应的金额将移动到默认消费位置‎"
+
+msgid "Moved to %1$s"
+msgstr "移动到%1$s"
+
+msgid "Decimal places allowed for prices (input)"
+msgstr ""
+
+msgid "Decimal places allowed for prices (display)"
 msgstr ""

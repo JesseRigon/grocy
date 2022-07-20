@@ -13,7 +13,7 @@
 				type="button"
 				data-toggle="collapse"
 				data-target="#table-filter-row">
-				<i class="fas fa-filter"></i>
+				<i class="fa-solid fa-filter"></i>
 			</button>
 		</div>
 	</div>
@@ -26,7 +26,7 @@
 	<div class="col-12 col-md-6 col-xl-2">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-search"></i></span>
+				<span class="input-group-text"><i class="fa-solid fa-search"></i></span>
 			</div>
 			<input type="text"
 				id="search"
@@ -37,7 +37,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Product') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Product') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="product-filter">
@@ -51,7 +51,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Transaction type') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Transaction type') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="transaction-type-filter">
@@ -65,7 +65,7 @@
 	<div class="col-12 col-md-6 col-xl-3">
 		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('User') }}</span>
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('User') }}</span>
 			</div>
 			<select class="custom-control custom-select"
 				id="user-filter">
@@ -78,11 +78,12 @@
 	</div>
 	<div class="col">
 		<div class="float-right mt-1">
-			<a id="clear-filter-button"
+			<button id="clear-filter-button"
 				class="btn btn-sm btn-outline-info"
-				href="#">
-				{{ $__t('Clear filter') }}
-			</a>
+				data-toggle="tooltip"
+				title="{{ $__t('Clear filter') }}">
+				<i class="fa-solid fa-filter-circle-xmark"></i>
+			</button>
 		</div>
 	</div>
 </div>
@@ -98,11 +99,11 @@
 							data-toggle="tooltip"
 							title="{{ $__t('Table options') }}"
 							data-table-selector="#stock-journal-summary-table"
-							href="#"><i class="fas fa-eye"></i></a>
+							href="#"><i class="fa-solid fa-eye"></i></a>
 					</th>
-					<th>{{ $__t('Product') }}</th>
-					<th>{{ $__t('Transaction type') }}</th>
-					<th>{{ $__t('User') }}</th>
+					<th class="allow-grouping">{{ $__t('Product') }}</th>
+					<th class="allow-grouping">{{ $__t('Transaction type') }}</th>
+					<th class="allow-grouping">{{ $__t('User') }}</th>
 					<th>{{ $__t('Amount') }}</th>
 				</tr>
 			</thead>
@@ -120,7 +121,7 @@
 						{{ $journalEntry->user_display_name }}
 					</td>
 					<td>
-						<span class="locale-number locale-number-quantity-amount">{{ $journalEntry->amount }}</span> {{ $__n($journalEntry->amount, $journalEntry->qu_name, $journalEntry->qu_name_plural) }}
+						<span class="locale-number locale-number-quantity-amount">{{ $journalEntry->amount }}</span> {{ $__n($journalEntry->amount, $journalEntry->qu_name, $journalEntry->qu_name_plural, true) }}
 					</td>
 				</tr>
 				@endforeach

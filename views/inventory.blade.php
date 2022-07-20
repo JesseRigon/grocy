@@ -82,14 +82,11 @@
 			@include('components.numberpicker', array(
 			'id' => 'price',
 			'label' => 'Price',
-			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_prices']),
-			'decimals' => $userSettings['stock_decimal_places_prices'],
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_prices_input']),
+			'decimals' => $userSettings['stock_decimal_places_prices_input'],
 			'value' => '',
-			'hint' => $__t('Per stock quantity unit', GROCY_CURRENCY),
-			'additionalHtmlContextHelp' => '<i class="fas fa-question-circle text-muted"
-				data-toggle="tooltip"
-				data-trigger="hover click"
-				title="' . $__t('This will apply to added products') . '"></i>',
+			'contextInfoId' => 'price-hint',
+			'hint' => $__t('This will apply to added products'),
 			'isRequired' => false,
 			'additionalCssClasses' => 'locale-number-input locale-number-currency'
 			))
@@ -116,7 +113,7 @@
 			<div class="form-group">
 				<label for="stock_label_type">
 					{{ $__t('Stock entry label') }}
-					<i class="fas fa-question-circle text-muted"
+					<i class="fa-solid fa-question-circle text-muted"
 						data-toggle="tooltip"
 						data-trigger="hover click"
 						title="{{ $__t('This will apply to added products') }}"></i>
@@ -131,6 +128,27 @@
 				<div class="invalid-feedback">{{ $__t('A quantity unit is required') }}</div>
 			</div>
 			@endif
+
+			<div class="form-group">
+				<label for="note">
+					{{ $__t('Note') }}
+					<i class="fa-solid fa-question-circle text-muted"
+						data-toggle="tooltip"
+						data-trigger="hover click"
+						title="{{ $__t('This will apply to added products') }}"></i>
+				</label>
+				<div class="input-group">
+					<input type="text"
+						class="form-control"
+						id="note"
+						name="note">
+				</div>
+			</div>
+
+			@include('components.userfieldsform', array(
+			'userfields' => $userfields,
+			'entity' => 'stock'
+			))
 
 			<button id="save-inventory-button"
 				class="btn btn-success">{{ $__t('OK') }}</button>

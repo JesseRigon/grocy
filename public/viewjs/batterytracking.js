@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if (!Grocy.FrontendHelpers.ValidateForm("batterytracking-form", true))
+	{
+		return;
+	}
+
 	if ($(".combobox-menu-visible").length)
 	{
 		return;
@@ -17,14 +22,13 @@
 				function(result)
 				{
 					Grocy.FrontendHelpers.EndUiBusy("batterytracking-form");
-					toastr.success(__t('Tracked charge cycle of battery %1$s on %2$s', batteryDetails.battery.name, $('#tracked_time').find('input').val()) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoChargeCycle(' + result.id + ')"><i class="fas fa-undo"></i> ' + __t("Undo") + '</a>');
+					toastr.success(__t('Tracked charge cycle of battery %1$s on %2$s', batteryDetails.battery.name, $('#tracked_time').find('input').val()) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoChargeCycle(' + result.id + ')"><i class="fa-solid fa-undo"></i> ' + __t("Undo") + '</a>');
 					Grocy.Components.BatteryCard.Refresh($('#battery_id').val());
 
 					$('#battery_id').val('');
 					$('#battery_id_text_input').focus();
 					$('#battery_id_text_input').val('');
 					$('#tracked_time').find('input').val(moment().format('YYYY-MM-DD HH:mm:ss'));
-					$('#tracked_time').find('input').trigger('change');
 					$('#battery_id_text_input').trigger('change');
 					Grocy.FrontendHelpers.ValidateForm('batterytracking-form');
 				},
@@ -83,11 +87,11 @@ $('#batterytracking-form input').keyup(function(event)
 
 $('#batterytracking-form input').keydown(function(event)
 {
-	if (event.keyCode === 13) //Enter
+	if (event.keyCode === 13) // Enter
 	{
 		event.preventDefault();
 
-		if (document.getElementById('batterytracking-form').checkValidity() === false) //There is at least one validation error
+		if (!Grocy.FrontendHelpers.ValidateForm('batterytracking-form'))
 		{
 			return false;
 		}

@@ -21,7 +21,7 @@
 				type="button"
 				data-toggle="collapse"
 				data-target="#table-filter-row">
-				<i class="fas fa-filter"></i>
+				<i class="fa-solid fa-filter"></i>
 			</button>
 		</div>
 	</div>
@@ -35,16 +35,34 @@
 		@include('components.productpicker', array(
 		'products' => $products,
 		'disallowAllProductWorkflows' => true,
-		'isRequired' => false
+		'isRequired' => false,
+		'additionalGroupCssClasses' => 'mb-0'
 		))
 	</div>
-	<div class="col">
+	@if(GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING)
+	<div class="col-12 col-md-6 col-xl-3 mt-auto">
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fa-solid fa-filter"></i>&nbsp;{{ $__t('Location') }}</span>
+			</div>
+			<select class="custom-control custom-select"
+				id="location-filter">
+				<option value="all">{{ $__t('All') }}</option>
+				@foreach($locations as $location)
+				<option value="{{ $location->id }}">{{ $location->name }}</option>
+				@endforeach
+			</select>
+		</div>
+	</div>
+	@endif
+	<div class="col mt-auto">
 		<div class="float-right mt-3">
-			<a id="clear-filter-button"
+			<button id="clear-filter-button"
 				class="btn btn-sm btn-outline-info"
-				href="#">
-				{{ $__t('Clear filter') }}
-			</a>
+				data-toggle="tooltip"
+				title="{{ $__t('Clear filter') }}">
+				<i class="fa-solid fa-filter-circle-xmark"></i>
+			</button>
 		</div>
 	</div>
 </div>
@@ -60,21 +78,27 @@
 							data-toggle="tooltip"
 							title="{{ $__t('Table options') }}"
 							data-table-selector="#stockentries-table"
-							href="#"><i class="fas fa-eye"></i></a>
+							href="#"><i class="fa-solid fa-eye"></i></a>
 					</th>
 					<th class="d-none">Hidden product_id</th> <!-- This must be in the first column for searching -->
-					<th>{{ $__t('Product') }}</th>
+					<th class="allow-grouping">{{ $__t('Product') }}</th>
 					<th>{{ $__t('Amount') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING) d-none @endif">{{ $__t('Due date') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING) d-none @endif">{{ $__t('Location') }}</th>
-					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Store') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING) d-none @endif allow-grouping">{{ $__t('Due date') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING) d-none @endif allow-grouping">{{ $__t('Location') }}</th>
+					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif allow-grouping">{{ $__t('Store') }}</th>
 					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">{{ $__t('Price') }}</th>
-					<th data-shadow-rowgroup-column="9">{{ $__t('Purchased date') }}</th>
+					<th class="allow-grouping"
+						data-shadow-rowgroup-column="9">{{ $__t('Purchased date') }}</th>
 					<th class="d-none">Hidden purchased_date</th>
 					<th>{{ $__t('Timestamp') }}</th>
+					<th>{{ $__t('Note') }}</th>
 
 					@include('components.userfields_thead', array(
-					'userfields' => $userfields
+					'userfields' => $userfieldsProducts
+					))
+
+					@include('components.userfields_thead', array(
+					'userfields' => $userfieldsStock
 					))
 				</tr>
 			</thead>
@@ -98,7 +122,7 @@
 							data-product-name="{{ FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->name }}"
 							data-product-qu-name="{{ FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name }}"
 							data-consume-amount="{{ $stockEntry->amount }}">
-							<i class="fas fa-utensils"></i>
+							<i class="fa-solid fa-utensils"></i>
 						</a>
 						@if(GROCY_FEATURE_FLAG_STOCK_PRODUCT_OPENED_TRACKING)
 						<a class="btn btn-success btn-sm product-open-button @if($stockEntry->open == 1 || FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->enable_tare_weight_handling == 1) disabled @endif"
@@ -111,7 +135,7 @@
 							data-product-qu-name="{{ FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name }}"
 							data-stock-id="{{ $stockEntry->stock_id }}"
 							data-stockrow-id="{{ $stockEntry->id }}">
-							<i class="fas fa-box-open"></i>
+							<i class="fa-solid fa-box-open"></i>
 						</a>
 						@endif
 						<a class="btn btn-info btn-sm show-as-dialog-link"
@@ -119,44 +143,44 @@
 							data-toggle="tooltip"
 							data-placement="left"
 							title="{{ $__t('Edit stock entry') }}">
-							<i class="fas fa-edit"></i>
+							<i class="fa-solid fa-edit"></i>
 						</a>
 						<div class="dropdown d-inline-block">
 							<button class="btn btn-sm btn-light text-secondary"
 								type="button"
 								data-toggle="dropdown">
-								<i class="fas fa-ellipsis-v"></i>
+								<i class="fa-solid fa-ellipsis-v"></i>
 							</button>
 							<div class="dropdown-menu">
 								@if(GROCY_FEATURE_FLAG_SHOPPINGLIST)
 								<a class="dropdown-item show-as-dialog-link"
 									type="button"
 									href="{{ $U('/shoppinglistitem/new?embedded&updateexistingproduct&product=' . $stockEntry->product_id ) }}">
-									<i class="fas fa-shopping-cart"></i> {{ $__t('Add to shopping list') }}
+									<i class="fa-solid fa-shopping-cart"></i> {{ $__t('Add to shopping list') }}
 								</a>
 								<div class="dropdown-divider"></div>
 								@endif
 								<a class="dropdown-item show-as-dialog-link"
 									type="button"
 									href="{{ $U('/purchase?embedded&product=' . $stockEntry->product_id ) }}">
-									<i class="fas fa-cart-plus"></i> {{ $__t('Purchase') }}
+									<i class="fa-solid fa-cart-plus"></i> {{ $__t('Purchase') }}
 								</a>
 								<a class="dropdown-item show-as-dialog-link"
 									type="button"
 									href="{{ $U('/consume?embedded&product=' . $stockEntry->product_id . '&locationId=' . $stockEntry->location_id . '&stockId=' . $stockEntry->stock_id) }}">
-									<i class="fas fa-utensils"></i> {{ $__t('Consume') }}
+									<i class="fa-solid fa-utensils"></i> {{ $__t('Consume') }}
 								</a>
 								@if(GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING)
 								<a class="dropdown-item show-as-dialog-link"
 									type="button"
 									href="{{ $U('/transfer?embedded&product=' . $stockEntry->product_id . '&locationId=' . $stockEntry->location_id . '&stockId=' . $stockEntry->stock_id) }}">
-									<i class="fas fa-exchange-alt"></i> {{ $__t('Transfer') }}
+									<i class="fa-solid fa-exchange-alt"></i> {{ $__t('Transfer') }}
 								</a>
 								@endif
 								<a class="dropdown-item show-as-dialog-link"
 									type="button"
 									href="{{ $U('/inventory?embedded&product=' . $stockEntry->product_id ) }}">
-									<i class="fas fa-list"></i> {{ $__t('Inventory') }}
+									<i class="fa-solid fa-list"></i> {{ $__t('Inventory') }}
 								</a>
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item stock-consume-button stock-consume-button-spoiled"
@@ -195,13 +219,13 @@
 									href="{{ $U('/stockjournal/summary?embedded&product=') }}{{ $stockEntry->product_id }}">
 									{{ $__t('Stock journal summary') }}
 								</a>
-								<a class="dropdown-item"
+								<a class="dropdown-item link-return"
 									type="button"
-									href="{{ $U('/product/') }}{{ $stockEntry->product_id . '?returnto=/stockentries' }}">
+									data-href="{{ $U('/product/') }}{{ $stockEntry->product_id }}">
 									{{ $__t('Edit product') }}
 								</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item stockentry-grocycode-link"
+								<a class="dropdown-item"
 									type="button"
 									href="{{ $U('/stockentry/' . $stockEntry->id . '/grocycode?download=true') }}">
 									{!! str_replace('grocycode', '<span class="ls-n1">grocycode</span>', $__t('Download %s grocycode', $__t('Stock entry'))) !!}
@@ -233,7 +257,7 @@
 					</td>
 					<td data-order="{{ $stockEntry->amount }}">
 						<span id="stock-{{ $stockEntry->id }}-amount"
-							class="locale-number locale-number-quantity-amount">{{ $stockEntry->amount }}</span> <span id="product-{{ $stockEntry->product_id }}-qu-name">{{ $__n($stockEntry->amount, FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name, FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name_plural) }}</span>
+							class="locale-number locale-number-quantity-amount">{{ $stockEntry->amount }}</span> <span id="product-{{ $stockEntry->product_id }}-qu-name">{{ $__n($stockEntry->amount, FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name, FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name_plural, true) }}</span>
 						<span id="stock-{{ $stockEntry->id }}-opened-amount"
 							class="small font-italic">@if($stockEntry->open == 1){{ $__t('Opened') }}@endif</span>
 					</td>
@@ -255,11 +279,15 @@
 						{{ FindObjectInArrayByPropertyValue($shoppinglocations, 'id', $stockEntry->shopping_location_id)->name }}
 						@endif
 					</td>
-					<td id="stock-{{ $stockEntry->id }}-price"
-						class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif"
-						class="locale-number locale-number-currency"
-						data-price-id="{{ $stockEntry->price }}">
-						{{ $stockEntry->price }}
+					<td data-order="{{$stockEntry->price}}"
+						class="@if(!GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING) d-none @endif">
+						<span id="stock-{{ $stockEntry->id }}-price"
+							data-toggle="tooltip"
+							data-trigger="hover click"
+							data-html="true"
+							title="{!! $__t('%1$s per %2$s', '<span class=\'locale-number locale-number-currency\'>' . $stockEntry->price . '</span>', FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name) !!}">
+							{!! $__t('%1$s per %2$s', '<span class="locale-number locale-number-currency">' . floatval($stockEntry->price) * floatval(FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_factor_purchase_to_stock) . '</span>', FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_purchase)->name) !!}
+						</span>
 					</td>
 					<td>
 						<span id="stock-{{ $stockEntry->id }}-purchased-date">{{ $stockEntry->purchased_date }}</span>
@@ -273,10 +301,18 @@
 						<time class="timeago timeago-contextual"
 							datetime="{{ $stockEntry->row_created_timestamp }}"></time>
 					</td>
+					<td>
+						<span id="stock-{{ $stockEntry->id }}-note">{{ $stockEntry->note }}</span>
+					</td>
 
 					@include('components.userfields_tbody', array(
-					'userfields' => $userfields,
-					'userfieldValues' => FindAllObjectsInArrayByPropertyValue($userfieldValues, 'object_id', $stockEntry->product_id)
+					'userfields' => $userfieldsProducts,
+					'userfieldValues' => FindAllObjectsInArrayByPropertyValue($userfieldValuesProducts, 'object_id', $stockEntry->product_id)
+					))
+
+					@include('components.userfields_tbody', array(
+					'userfields' => $userfieldsStock,
+					'userfieldValues' => FindAllObjectsInArrayByPropertyValue($userfieldValuesStock, 'object_id', $stockEntry->stock_id)
 					))
 
 				</tr>

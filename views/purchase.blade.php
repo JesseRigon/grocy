@@ -23,7 +23,7 @@
 				type="button"
 				data-toggle="collapse"
 				data-target="#related-links">
-				<i class="fas fa-ellipsis-v"></i>
+				<i class="fa-solid fa-ellipsis-v"></i>
 			</button>
 			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
 				id="related-links">
@@ -102,8 +102,8 @@
 			@include('components.numberpicker', array(
 			'id' => 'price',
 			'label' => 'Price',
-			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_prices']),
-			'decimals' => $userSettings['stock_decimal_places_prices'],
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_prices_input']),
+			'decimals' => $userSettings['stock_decimal_places_prices_input'],
 			'value' => '',
 			'contextInfoId' => 'price-hint',
 			'isRequired' => false,
@@ -117,7 +117,8 @@
 					name="price-type"
 					id="price-type-unit-price"
 					value="unit-price"
-					checked>
+					checked
+					tabindex="-1">
 				<label class="custom-control-label"
 					for="price-type-unit-price">{{ $__t('Unit price') }}</label>
 			</div>
@@ -126,7 +127,8 @@
 					type="radio"
 					name="price-type"
 					id="price-type-total-price"
-					value="total-price">
+					value="total-price"
+					tabindex="-1">
 				<label class="custom-control-label"
 					for="price-type-total-price">{{ $__t('Total price') }}</label>
 			</div>
@@ -161,6 +163,21 @@
 				<div class="invalid-feedback">{{ $__t('A quantity unit is required') }}</div>
 			</div>
 			@endif
+
+			<div class="form-group">
+				<label for="note">{{ $__t('Note') }}</label>
+				<div class="input-group">
+					<input type="text"
+						class="form-control"
+						id="note"
+						name="note">
+				</div>
+			</div>
+
+			@include('components.userfieldsform', array(
+			'userfields' => $userfields,
+			'entity' => 'stock'
+			))
 
 			<button id="save-purchase-button"
 				class="btn btn-success d-block">{{ $__t('OK') }}</button>
