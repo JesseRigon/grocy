@@ -2,7 +2,6 @@
 
 namespace Grocy\Controllers;
 
-//cc:init#;Load Session Service
 use Grocy\Services\SessionService;
 
 class LoginController extends BaseController

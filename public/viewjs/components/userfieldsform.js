@@ -178,7 +178,7 @@ Grocy.Components.UserfieldsForm.Load = function()
 					}
 					else if (input.attr("data-userfield-type") == "link")
 					{
-						if (value != null && !value.isEmpty())
+						if (!value.isEmpty())
 						{
 							var data = JSON.parse(value);
 

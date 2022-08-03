@@ -1,8 +1,6 @@
 <?php
 
-//cc:init#1;login
 use Grocy\Controllers\LoginController;
-//cc:init#2;load Url Manager
 use Grocy\Helpers\UrlManager;
 use Grocy\Middleware\CorsMiddleware;
 use Psr\Container\ContainerInterface as Container;

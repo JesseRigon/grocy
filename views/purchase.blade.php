@@ -117,8 +117,7 @@
 					name="price-type"
 					id="price-type-unit-price"
 					value="unit-price"
-					checked
-					tabindex="-1">
+					checked>
 				<label class="custom-control-label"
 					for="price-type-unit-price">{{ $__t('Unit price') }}</label>
 			</div>
@@ -127,8 +126,7 @@
 					type="radio"
 					name="price-type"
 					id="price-type-total-price"
-					value="total-price"
-					tabindex="-1">
+					value="total-price">
 				<label class="custom-control-label"
 					for="price-type-total-price">{{ $__t('Total price') }}</label>
 			</div>

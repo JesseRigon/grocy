@@ -406,7 +406,7 @@ class StockService extends BaseService
 				$potentialStockEntries = FindAllObjectsInArrayByPropertyValue($potentialStockEntries, 'stock_id', $specificStockEntryId);
 			}
 
-			$productStockAmount = floatval($productDetails->stock_amount_aggregated);
+			$productStockAmount = SumArrayValue($potentialStockEntries, 'amount');
 			if ($amount > $productStockAmount)
 			{
 				throw new \Exception('Amount to be consumed cannot be > current stock amount (if supplied, at the desired location)');
@@ -677,16 +677,7 @@ class StockService extends BaseService
 
 	public function GetMissingProducts()
 	{
-		$missingProductsResponse = $this->getDatabaseService()->ExecuteDbQuery('SELECT * FROM stock_missing_products')->fetchAll(\PDO::FETCH_OBJ);
-
-		$relevantProducts = $this->getDatabase()->products()->where('id IN (SELECT id FROM stock_missing_products)');
-		foreach ($relevantProducts as $product)
-		{
-			FindObjectInArrayByPropertyValue($missingProductsResponse, 'id', $product->id)->product = $product;
-
-		}
-
-		return $missingProductsResponse;
+		return $this->getDatabaseService()->ExecuteDbQuery('SELECT * FROM stock_missing_products')->fetchAll(\PDO::FETCH_OBJ);
 	}
 
 	public function GetProductDetails(int $productId)

@@ -374,6 +374,3 @@ msgstr ""
 
 msgid "Slovenian"
 msgstr ""
-
-msgid "Lithuanian"
-msgstr ""
